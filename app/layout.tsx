@@ -4,6 +4,8 @@ import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import { ReactNode } from 'react'
 
+import ThemeProvider from '@/context/Theme'
+
 export const metadata: Metadata = {
   title: 'DevFlow',
   description: 'A better replacement of stack overflow',
@@ -30,8 +32,17 @@ export default function RootLayout({
   children: ReactNode
 }>) {
   return (
-    <html lang='en'>
-      <body className={`${Inter.variable} ${SpaceGrotesk.variable} antialiased`}>{children}</body>
+    <html lang='en' suppressHydrationWarning>
+      <body className={`${Inter.variable} ${SpaceGrotesk.variable} antialiased`}>
+        <ThemeProvider
+          attribute='class'
+          defaultTheme='system'
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
+      </body>
     </html>
   )
 }
