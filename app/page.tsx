@@ -1,3 +1,3 @@
 export default function Home() {
-  return <div className='h2-bold'>hello nextjs</div>
+  return <div className='font-space-grotesk'>hello nextjs</div>
 }

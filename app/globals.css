@@ -13,9 +13,14 @@
   --color-dark-300: #151821;
   --color-dark-400: #212734;
   --color-dark-500: #101012;
+  --color-dark-600: #2e3438;
+  --color-dark-700: #3b4045;
+  --color-dark-800: #2a2e32;
+  --color-dark-900: #ffffff;
 
   --color-light-400: #858ead;
   --color-light-500: #7b8ec8;
+  --color-light-600: #6c7bc1;
   --color-light-700: #dce3f1;
   --color-light-800: #f4f6f8;
   --color-light-850: #fdfdfd;
