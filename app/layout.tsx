@@ -6,8 +6,6 @@ import { ReactNode } from 'react'
 
 import ThemeProvider from '@/context/Theme'
 
-import NavBar from '../components/navigation/navbar'
-
 export const metadata: Metadata = {
   title: 'DevFlow',
   description: 'A better replacement of stack overflow',
@@ -42,7 +40,6 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <NavBar />
           {children}
         </ThemeProvider>
       </body>

@@ -76,6 +76,10 @@
   @apply bg-light-900 dark:bg-dark-300;
 }
 
+@utility background-light900_dark400 {
+  @apply bg-light-900 dark:bg-dark-400;
+}
+
 @utility background-light800_dark200 {
   @apply bg-light-800 dark:bg-dark-200;
 }
@@ -281,6 +285,10 @@
 
 @utility tab {
   @apply dark:bg-dark-400 bg-light-400 text-light-500 dark:data-[state=active]:bg-dark-300 data-[state=active]:bg-primary-100 data-[state=active]:text-primary-500 min-h-full;
+}
+
+@utility invert-colors {
+  @apply invert dark:invert-0;
 }
 
 @layer base {
