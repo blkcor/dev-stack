@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 
 const Theme = () => {
-  const { setTheme } = useTheme()
+  const { setTheme, theme } = useTheme()
 
   return (
     <DropdownMenu>
