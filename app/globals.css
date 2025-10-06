@@ -236,6 +236,10 @@
   background: linear-gradient(132deg, rgba(247, 249, 255, 0.5) 0%, rgba(229, 237, 255, 0.25) 100%);
 }
 
+@utility primary-gradient {
+    background: linear-gradient(129deg, #ff7000 0%, #e2995f 100%);
+}
+
 @utility primary-text-gradient {
   background: linear-gradient(129deg, #ff7000 0%, #e2995f 100%);
   background-clip: text;
