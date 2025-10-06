@@ -11,6 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { cn } from '@/lib/utils'
 
 const Theme = () => {
   const { setTheme, theme } = useTheme()
@@ -27,17 +28,26 @@ const Theme = () => {
             icon='material-symbols:wb-sunny-outline'
             className='absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0'
           />
-          <span className='sr-only'>Toggle theme</span>
+          <span className='sr-only'>Toggle theme </span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end'>
-        <DropdownMenuItem className='cursor-pointer' onClick={() => setTheme('light')}>
+        <DropdownMenuItem
+          className={cn(theme === 'light' ? 'primary-gradient' : '', 'cursor-pointer')}
+          onClick={() => setTheme('light')}
+        >
           Light
         </DropdownMenuItem>
-        <DropdownMenuItem className='cursor-pointer' onClick={() => setTheme('dark')}>
+        <DropdownMenuItem
+          className={cn(theme === 'dark' ? 'primary-gradient' : '', 'cursor-pointer')}
+          onClick={() => setTheme('dark')}
+        >
           Dark
         </DropdownMenuItem>
-        <DropdownMenuItem className='cursor-pointer' onClick={() => setTheme('system')}>
+        <DropdownMenuItem
+          className={cn(theme === 'system' ? 'primary-gradient' : '', 'cursor-pointer')}
+          onClick={() => setTheme('system')}
+        >
           System
         </DropdownMenuItem>
       </DropdownMenuContent>
