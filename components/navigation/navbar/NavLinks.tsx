@@ -26,8 +26,10 @@ const NavLinks = ({ isMobile }: Props) => {
             key={link.label}
             href={link.route}
             className={cn(
-              'flex items-center justify-start gap-4 bg-transparent p-4',
-              isActive ? 'primary-gradient text-light-900 rounded-lg' : 'text-dark300_light900'
+              'flex items-center justify-start gap-4 bg-transparent p-4 transition-all duration-200 ease-in-out',
+              isActive
+                ? 'primary-gradient text-light-900 rounded-lg'
+                : 'text-dark300_light900 hover:bg-light-800 hover:text-primary-500 dark:hover:bg-dark-300 dark:hover:text-primary-500 rounded-lg hover:shadow-sm'
             )}
           >
             <Icon icon={link.icon} className={cn('h-5 w-5', !isActive && 'invert-colors')} />
