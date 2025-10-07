@@ -1,4 +1,3 @@
-// TODO: why client??
 'use client'
 
 import type { ThemeProviderProps } from 'next-themes'
