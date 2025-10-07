@@ -14,8 +14,11 @@ type Props = {
 const TagCard = ({ _id, name, showCount, questions }: Props) => {
   const iconClass = getDevIconClass(name)
   return (
-    <Link href={`/tags/${_id}`} className='flex items-center justify-between gap-2 transition-all hover:scale-105 hover:opacity-80'>
-      <Badge className='subtle-medium background-light800_dark300 text-light400_light500 rounded-md border-none px-4 py-2 uppercase'>
+    <Link
+      href={`/tags/${_id}`}
+      className='flex items-center justify-between gap-2 transition-all hover:scale-105 hover:opacity-80'
+    >
+      <Badge className='subtle-medium !background-light800_dark300 text-light400_light500 rounded-md border-none px-4 py-2 uppercase'>
         <div className='flex-center space-x-2'>
           <i className={iconClass} />
           <span>{name}</span>
