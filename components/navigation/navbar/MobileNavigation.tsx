@@ -19,7 +19,10 @@ const MobileNavigation = () => {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Icon icon='quill:hamburger' className='invert-colors h-9 w-9 cursor-pointer sm:hidden transition-all duration-200 ease-in-out hover:scale-110 hover:text-primary-500 active:scale-95' />
+        <Icon
+          icon='quill:hamburger'
+          className='hover:text-primary-500 h-9 w-9 cursor-pointer transition-all duration-200 ease-in-out hover:scale-110 active:scale-95 sm:hidden'
+        />
       </SheetTrigger>
       <SheetContent side='left' className='background-light900_dark200 border-none'>
         <SheetHeader>
@@ -39,14 +42,14 @@ const MobileNavigation = () => {
           <div className='flex flex-col gap-3 p-4'>
             <SheetClose asChild>
               <Link href={ROUTES.SIGN_IN}>
-                <Button className='small-medium btn-secondary min-h-[41px] w-full rounded-lg px-4 py-3 shadow-none transition-all duration-200 ease-in-out hover:shadow-md hover:scale-[1.02] hover:bg-primary-100 dark:hover:bg-primary-900 active:scale-[0.98]'>
+                <Button className='small-medium btn-secondary hover:bg-primary-100 dark:hover:bg-primary-900 min-h-[41px] w-full rounded-lg px-4 py-3 shadow-none transition-all duration-200 ease-in-out hover:scale-[1.02] hover:shadow-md active:scale-[0.98]'>
                   <span className='primary-text-gradient'>Log In</span>
                 </Button>
               </Link>
             </SheetClose>
             <SheetClose asChild>
               <Link href={ROUTES.SIGN_UP}>
-                <Button className='small-medium light-borde-2 btn-tertiary text-dark400_light900 min-h-[41px] w-full rounded-lg px-4 py-3 shadow-none transition-all duration-200 ease-in-out hover:shadow-md hover:scale-[1.02] hover:bg-light-800 dark:hover:bg-dark-300 hover:text-primary-500 active:scale-[0.98]'>
+                <Button className='small-medium light-borde-2 btn-tertiary text-dark400_light900 hover:bg-light-800 dark:hover:bg-dark-300 hover:text-primary-500 min-h-[41px] w-full rounded-lg px-4 py-3 shadow-none transition-all duration-200 ease-in-out hover:scale-[1.02] hover:shadow-md active:scale-[0.98]'>
                   <span>Sign Up</span>
                 </Button>
               </Link>

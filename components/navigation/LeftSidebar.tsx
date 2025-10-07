@@ -14,27 +14,25 @@ const LeftSidebar = () => {
       </div>
       <div className='flex flex-col gap-3'>
         <Button
-          className='small-medium btn-secondary min-h-[41px] w-full rounded-lg px-4 py-3 shadow-none transition-all duration-200 ease-in-out hover:shadow-md hover:scale-[1.02] hover:bg-primary-100 dark:hover:bg-primary-900'
+          className='small-medium btn-secondary min-h-[41px] w-full rounded-lg px-4 py-3 shadow-none'
           asChild
         >
-          <Link href={ROUTES.SIGN_IN} className='relative right-[5px] flex items-center gap-4'>
-            <Icon
-              icon='material-symbols:login-sharp'
-              className='invert-colors text-dark300_light900 h-5 w-5 transition-transform duration-200 group-hover:scale-110'
-            />
-            <span className='primary-text-gradient max-lg:hidden'>Log In</span>
+          <Link href={ROUTES.SIGN_IN}>
+            <div className='flex items-center gap-4 lg:mr-[10px]'>
+              <Icon icon='material-symbols:login-sharp' className='text-dark300_light900 h-5 w-5' />
+              <span className='primary-text-gradient max-lg:hidden'>Log In</span>
+            </div>
           </Link>
         </Button>
         <Button
-          className='small-medium light-borde-2 btn-tertiary text-dark400_light900 min-h-[41px] w-full rounded-lg px-4 py-3 shadow-none transition-all duration-200 ease-in-out hover:shadow-md hover:scale-[1.02] hover:bg-light-800 dark:hover:bg-dark-300 hover:text-primary-500'
+          className='small-medium light-borde-2 btn-tertiary text-dark400_light900 min-h-[41px] w-full rounded-lg px-4 py-3 shadow-none'
           asChild
         >
-          <Link href={ROUTES.SIGN_UP} className='flex items-center gap-4 group'>
-            <Icon
-              icon='bitcoin-icons:sign-outline'
-              className='invert-colors text-dark300_light900 h-5 w-5 transition-transform duration-200 group-hover:scale-110'
-            />
-            <span className='max-lg:hidden'>Sign Up</span>
+          <Link href={ROUTES.SIGN_UP}>
+            <div className='flex items-center gap-4'>
+              <Icon icon='bitcoin-icons:sign-outline' className='text-dark300_light900 h-5 w-5' />
+              <span className='max-lg:hidden'>Sign Up</span>
+            </div>
           </Link>
         </Button>
       </div>

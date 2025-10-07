@@ -36,7 +36,7 @@ const SocialAuthForm = () => {
           onClick={() => handleSignIn(provider)}
         >
           <Icon icon={icon} className='invert-colors mr-2.5 h-5 w-5' />
-          <span>Login with {provider}</span>
+          <span className='invert-colors'>Login with {provider}</span>
         </Button>
       ))}
     </div>

@@ -32,7 +32,7 @@ const NavLinks = ({ isMobile }: Props) => {
                 : 'text-dark300_light900 hover:bg-light-800 hover:text-primary-500 dark:hover:bg-dark-300 dark:hover:text-primary-500 rounded-lg hover:shadow-sm'
             )}
           >
-            <Icon icon={link.icon} className={cn('h-5 w-5', !isActive && 'invert-colors')} />
+            <Icon icon={link.icon} className={cn('h-5 w-5')} />
             <p className={cn(isActive ? 'base-bold' : 'base-medium', !isMobile && 'max-lg:hidden')}>
               {link.label}
             </p>
