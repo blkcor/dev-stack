@@ -26,6 +26,7 @@ const eslintConfig = [
     rules: {
       '@typescript-eslint/triple-slash-reference': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
+      'no-undef': 'off', // TypeScript handles this
       'import/order': [
         'error',
         {
