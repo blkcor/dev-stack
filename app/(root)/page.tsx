@@ -91,7 +91,10 @@ interface SearchParamsProps {
   searchParams: Promise<{ [key: string]: string }>
 }
 export default function Home({ searchParams }: SearchParamsProps) {
-  const { query } = use(searchParams)
+  const { query, filter } = use(searchParams)
+
+  // TODO: add the filter logic with the tag filter => filter query params
+  console.log(filter)
 
   const filteredQuestions = questions.filter(question =>
     question.title.toLowerCase().includes(query?.toLowerCase() || '')
