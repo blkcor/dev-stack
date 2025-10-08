@@ -1,5 +1,7 @@
 import Link from 'next/link'
+import { use } from 'react'
 
+import HomeFilter from '@/components/filters/HomeFilter'
 import LocalSearch from '@/components/search/LocalSearch'
 import { Button } from '@/components/ui/button'
 import ROUTES from '@/constants/routes'
@@ -88,8 +90,8 @@ interface SearchParamsProps {
    */
   searchParams: Promise<{ [key: string]: string }>
 }
-export default async function Home({ searchParams }: SearchParamsProps) {
-  const { query } = await searchParams
+export default function Home({ searchParams }: SearchParamsProps) {
+  const { query } = use(searchParams)
 
   const filteredQuestions = questions.filter(question =>
     question.title.toLowerCase().includes(query?.toLowerCase() || '')
@@ -104,6 +106,7 @@ export default async function Home({ searchParams }: SearchParamsProps) {
         </Button>
       </section>
 
+      {/* Local Search */}
       <section className='mt-11'>
         <LocalSearch
           route='/'
@@ -112,8 +115,11 @@ export default async function Home({ searchParams }: SearchParamsProps) {
           icon='material-symbols:search-sharp'
         />
       </section>
-      {/* <section>filters</section> */}
 
+      {/* HomeFilter */}
+      <HomeFilter />
+
+      {/* Question Cards */}
       <div className='mt-10 flex w-full flex-col gap-6'>
         {filteredQuestions.map(question => (
           <h1 key={question._id}>{question.title}</h1>
