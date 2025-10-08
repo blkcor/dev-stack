@@ -1,5 +1,6 @@
 import Link from 'next/link'
 
+import LocalSearch from '@/components/search/LocalSearch'
 import { Button } from '@/components/ui/button'
 import ROUTES from '@/constants/routes'
 
@@ -14,7 +15,14 @@ export default function Home() {
         </Button>
       </section>
 
-      <section className='mt-11'>local search</section>
+      <section className='mt-11'>
+        <LocalSearch
+          route='/'
+          placeHolder='Search Questions...'
+          otherClasses='flex-1'
+          icon='material-symbols:search-sharp'
+        />
+      </section>
       <section>filters</section>
 
       <div className='mt-10 flex w-full flex-col gap-6'>

@@ -88,6 +88,10 @@
     @apply bg-light-800 dark:bg-dark-300;
 }
 
+@utility background-light800_darkgradient{
+    background: linear-gradient(132deg, rgba(247, 249, 255, 0.5) 0%, rgba(229, 237, 255, 0.25) 100%);
+}
+
 @utility background-light400_dark900 {
   @apply bg-light-400 dark:bg-dark-900;
 }
