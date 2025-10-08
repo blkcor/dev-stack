@@ -30,7 +30,10 @@ const LeftSidebar = () => {
         >
           <Link href={ROUTES.SIGN_UP}>
             <div className='flex items-center gap-4'>
-              <Icon icon='bitcoin-icons:sign-outline' className='text-dark300_light900 h-5 w-5' />
+              <Icon
+                icon='streamline-plump:fill-and-sign'
+                className='text-dark300_light900 h-5 w-5'
+              />
               <span className='max-lg:hidden'>Sign Up</span>
             </div>
           </Link>
