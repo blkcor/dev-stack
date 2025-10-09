@@ -1,10 +1,12 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import { type MDXEditorMethods } from '@mdxeditor/editor'
+import dynamic from 'next/dynamic'
 import * as React from 'react'
+import { useRef } from 'react'
 import { useForm } from 'react-hook-form'
 
-import Editor from '@/components/Editor'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -18,6 +20,10 @@ import {
 import { Input } from '@/components/ui/input'
 import { AskQuestionSchema } from '@/lib/validation'
 
+const Editor = dynamic(() => import('@/components/editor'), {
+  ssr: false,
+})
+
 const QuestionForm = () => {
   const form = useForm({
     resolver: zodResolver(AskQuestionSchema),
@@ -30,6 +36,7 @@ const QuestionForm = () => {
 
   const handleCreateQuestion = async () => {}
 
+  const editorRef = useRef<MDXEditorMethods>(null)
   return (
     <Form {...form}>
       <form
@@ -70,7 +77,7 @@ const QuestionForm = () => {
                 Detailed explanation of your question <span className='text-primary-500'>*</span>
               </FormLabel>
               <FormControl>
-                <Editor />
+                <Editor editorRef={editorRef} value={field.value} fieldChange={field.onChange} />
               </FormControl>
               <FormDescription className='body-regular text-light-500 mt-2.5'>
                 Introduce the question and explain what you&apos;ve put in the title.
