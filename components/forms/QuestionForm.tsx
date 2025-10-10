@@ -6,7 +6,9 @@ import dynamic from 'next/dynamic'
 import * as React from 'react'
 import { useRef } from 'react'
 import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 
+import TagCard from '@/components/cards/TagCard'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -19,13 +21,12 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { AskQuestionSchema } from '@/lib/validation'
-
 const Editor = dynamic(() => import('@/components/editor'), {
   ssr: false,
 })
 
 const QuestionForm = () => {
-  const form = useForm({
+  const form = useForm<z.infer<typeof AskQuestionSchema>>({
     resolver: zodResolver(AskQuestionSchema),
     defaultValues: {
       title: '',
@@ -34,7 +35,45 @@ const QuestionForm = () => {
     },
   })
 
-  const handleCreateQuestion = async () => {}
+  const handleCreateQuestion = async (data: z.infer<typeof AskQuestionSchema>) => {
+    console.log(data)
+  }
+
+  const handleAddTag = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    field: { value: Array<string> }
+  ) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      const currentTag = e.currentTarget.value.trim()
+      if (currentTag && currentTag.length <= 15 && !field.value.includes(currentTag)) {
+        form.setValue('tags', [...field.value, currentTag])
+        e.currentTarget.value = ''
+        form.clearErrors('tags')
+      } else if (currentTag.length >= 15) {
+        form.setError('tags', {
+          type: 'manual',
+          message: 'Tag should be less than 15 characters',
+        })
+      } else {
+        form.setError('tags', {
+          type: 'manual',
+          message: 'Tag is already in the field',
+        })
+      }
+    }
+  }
+
+  const handleDeleteTag = (tag: string, field: { value: string[] }) => {
+    const newTags = field.value.filter(t => t !== tag)
+    if (newTags.length === 0) {
+      form.setError('tags', {
+        type: 'manual',
+        message: 'Tags should not be empty',
+      })
+    }
+    form.setValue('tags', newTags)
+  }
 
   const editorRef = useRef<MDXEditorMethods>(null)
   return (
@@ -101,9 +140,22 @@ const QuestionForm = () => {
                   <Input
                     className='paragraph-regular background- light-border-2 text-dark300_light700 no-focus min-h-[56px] border'
                     placeholder='Add tags...'
-                    {...field}
+                    onKeyDown={e => handleAddTag(e, field)}
                   />
-                  Tags
+                  {field.value.length > 0 && (
+                    <div className='flex-start mt-2.5 flex-wrap gap-2.5'>
+                      {field?.value?.map(tag => (
+                        <TagCard
+                          key={tag}
+                          _id={tag}
+                          name={tag}
+                          compact
+                          removeAble
+                          handleRemove={() => handleDeleteTag(tag, field)}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
               </FormControl>
               <FormDescription className='body-regular text-light-500 mt-2.5'>

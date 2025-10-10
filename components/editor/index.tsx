@@ -34,7 +34,7 @@ import {
 } from '@mdxeditor/editor'
 import { basicDarkTheme } from 'cm6-theme-basic-dark'
 import { useTheme } from 'next-themes'
-import { ForwardedRef, useEffect, useState } from 'react'
+import { ForwardedRef } from 'react'
 
 export default function Editor({
   editorRef,
@@ -55,7 +55,7 @@ export default function Editor({
       key={resolvedTheme}
       markdown={value}
       onChange={fieldChange}
-      className='background-light800_dark200 light-border-2 markdown-editor dark-editor w-full border'
+      className='background-light800_dark200 light-border-2 markdown-editor dark-editor grid w-full border'
       plugins={[
         headingsPlugin(),
         listsPlugin(),
