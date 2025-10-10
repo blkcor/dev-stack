@@ -2,6 +2,7 @@
 
 import './dark-editor.css'
 import '@mdxeditor/editor/style.css'
+import { type Extension } from '@codemirror/state'
 import {
   headingsPlugin,
   listsPlugin,
@@ -33,7 +34,7 @@ import {
 } from '@mdxeditor/editor'
 import { basicDarkTheme } from 'cm6-theme-basic-dark'
 import { useTheme } from 'next-themes'
-import type { ForwardedRef } from 'react'
+import { ForwardedRef, useEffect, useState } from 'react'
 
 export default function Editor({
   editorRef,
@@ -46,10 +47,12 @@ export default function Editor({
   fieldChange: (...event: any[]) => void
 } & Omit<MDXEditorProps, 'markdown'>) {
   const { resolvedTheme } = useTheme()
+
   const theme = resolvedTheme === 'dark' ? [basicDarkTheme] : []
 
   return (
     <MDXEditor
+      key={resolvedTheme}
       markdown={value}
       onChange={fieldChange}
       className='background-light800_dark200 light-border-2 markdown-editor dark-editor w-full border'
@@ -130,7 +133,7 @@ export default function Editor({
             '': '',
           },
           autoLoadLanguageSupport: true,
-          codeMirrorExtensions: [theme],
+          codeMirrorExtensions: theme,
         }),
         diffSourcePlugin({
           viewMode: 'rich-text',
