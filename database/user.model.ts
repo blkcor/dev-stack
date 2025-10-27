@@ -8,7 +8,7 @@ export interface IUser {
   avatar: string
   location?: string
   portfolio?: string
-  reputation?: number
+  reputation: number
 }
 
 const UserSchema = new Schema<IUser>(
