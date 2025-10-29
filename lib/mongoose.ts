@@ -38,11 +38,11 @@ const dbConnect = async (): Promise<Mongoose> => {
         dbName: 'devstack',
       })
       .then(result => {
-        logger.info('Connect to mongodb')
+        logger.info('Connected to mongodb')
         return result
       })
       .catch(err => {
-        logger.error('Error connecting to mongodb')
+        logger.error('Error connecting to mongodb, ' + MONGODB_URI)
         throw err
       })
   }

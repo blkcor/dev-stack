@@ -1,3 +1,5 @@
+import { NextResponse } from 'next/server'
+
 export {}
 
 declare global {
@@ -22,4 +24,20 @@ declare global {
     views: number
     createdAt: Date
   }
+
+  type ActionResponse<T> = {
+    success: boolean
+    data?: T
+    error?: {
+      message: string
+      details: Record<string, Array<string>>
+    }
+    status?: number
+  }
+
+  type SuccessResponse<T> = ActionResponse<T> & { success: true }
+  type ErrorResponse = ActionResponse<undefined> & { success: false }
+
+  type APIErrorResponse = NextResponse<ErrorResponse>
+  type APIResponse<T> = NextResponse<SuccessResponse<T> | ErrorResponse>
 }
