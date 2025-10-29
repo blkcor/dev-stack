@@ -94,3 +94,36 @@ export const AskQuestionSchema = z.object({
       error: 'You can only add up to 5 tags',
     }),
 })
+
+export const UserSchema = z.object({
+  name: z
+    .string({
+      error: iss => (iss.input === undefined ? 'Name is required.' : 'Invalid Name input.'),
+    })
+    .min(1, {
+      error: 'Name is required',
+    }),
+  username: z
+    .string({
+      error: iss => (iss.input === undefined ? 'Username is required.' : 'Invalid Username input.'),
+    })
+    .min(3, {
+      error: 'Username must be at least 3',
+    }),
+  email: z.email({
+    error: iss => (iss.input === undefined ? 'Email is required' : 'Invalid Email input.'),
+  }),
+  bio: z.string().optional(),
+  avatar: z
+    .url({
+      error: 'Please provide a valid avatar',
+    })
+    .optional(),
+  location: z.string().optional(),
+  portfolio: z
+    .url({
+      error: 'Please provide a valid portfolio URL',
+    })
+    .optional(),
+  reputation: z.number().optional(),
+})
