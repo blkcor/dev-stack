@@ -1,4 +1,4 @@
-import { model, models, Schema, Types } from 'mongoose'
+import { model, models, Schema, Types, Model } from 'mongoose'
 
 type VoteTo = 'answer' | 'question'
 type VoteType = 'upvote' | 'downvote'

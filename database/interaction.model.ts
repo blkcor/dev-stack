@@ -1,4 +1,4 @@
-import { model, models, Schema, Types } from 'mongoose'
+import { Model, model, models, Schema, Types } from 'mongoose'
 
 //  use this model for Recommended Algorithms
 
@@ -21,6 +21,8 @@ const InteractionSchema = new Schema<IInteraction>(
   }
 )
 
-const Interaction = models.Interaction || model<IInteraction>('Interaction', InteractionSchema)
+const Interaction =
+  (models.Interaction as Model<IInteraction>) ||
+  model<IInteraction>('Interaction', InteractionSchema)
 
 export default Interaction

@@ -1,4 +1,4 @@
-import { model, models, Schema, Types } from 'mongoose'
+import { model, models, Schema, Types, Model } from 'mongoose'
 
 export interface IAnswer {
   author: Types.ObjectId
@@ -21,6 +21,6 @@ const AnswerSchema = new Schema<IAnswer>(
   }
 )
 
-const Answer = models.Answer || model<IAnswer>('Answer', AnswerSchema)
+const Answer = (models.Answer as Model<IAnswer>) || model<IAnswer>('Answer', AnswerSchema)
 
 export default Answer
