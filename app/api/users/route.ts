@@ -4,7 +4,6 @@ import { z } from 'zod'
 import User from '@/database/user.model'
 import { handleError } from '@/lib/handlers/error'
 import { ValidationError } from '@/lib/http-errors'
-import { logger } from '@/lib/logger'
 import dbConnect from '@/lib/mongoose'
 import { UserSchema } from '@/lib/validation'
 

@@ -127,3 +127,62 @@ export const UserSchema = z.object({
     .optional(),
   reputation: z.number().optional(),
 })
+
+export const AccountSchema = z.object({
+  userId: z
+    .string({
+      error: iss => (iss.input === undefined ? 'User ID is required.' : 'Invalid User ID input.'),
+    })
+    .min(1, {
+      error: 'User ID is required',
+    }),
+  name: z
+    .string({
+      error: iss => (iss.input === undefined ? 'Name is required.' : 'Invalid Name input.'),
+    })
+    .min(1, {
+      error: 'Name is required',
+    }),
+  avatar: z
+    .url({
+      error: 'Please provide a valid avatar URL',
+    })
+    .optional(),
+  password: z
+    .string()
+    .min(6, {
+      error: 'Password must be at least 6 characters long',
+    })
+    .max(100, {
+      error: 'Password cannot exceed 100 characters long',
+    })
+    .regex(/A-Z/, {
+      error: 'Password must contain at least one uppercase letter',
+    })
+    .regex(/a-z/, {
+      error: 'Password must contain at least one lowercase letter',
+    })
+    .regex(/0-9/, {
+      error: 'Password must contain at least one number',
+    })
+    .regex(/[^a-zA-Z0-9]/, {
+      error: 'Password must contain at least one special character',
+    }),
+  provider: z
+    .string({
+      error: iss => (iss.input === undefined ? 'Provider is required.' : 'Invalid Provider input.'),
+    })
+    .min(1, {
+      error: 'Provider is required',
+    }),
+  providerAccountId: z
+    .string({
+      error: iss =>
+        iss.input === undefined
+          ? 'Provider Account ID is required.'
+          : 'Invalid Provider Account ID input.',
+    })
+    .min(1, {
+      error: 'Provider Account ID is required',
+    }),
+})
