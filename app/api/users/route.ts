@@ -29,7 +29,7 @@ export const POST = async (req: NextRequest) => {
     const validatedResult = UserSchema.safeParse(body)
     if (!validatedResult.success) {
       const flattened = z.flattenError(validatedResult.error)
-      throw new ValidationError(flattened.fieldErrors as Record<string, string[]>)
+      throw new ValidationError(flattened.fieldErrors)
     }
 
     const { email, username } = validatedResult.data
