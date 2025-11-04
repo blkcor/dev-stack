@@ -5,7 +5,7 @@ import Account from '@/database/account.model'
 import { handleError } from '@/lib/handlers/error'
 import { NotFoundError, ValidationError } from '@/lib/http-errors'
 import dbConnect from '@/lib/mongoose'
-import { AccountSchema, UserSchema } from '@/lib/validation'
+import { AccountSchema } from '@/lib/validation'
 
 export const POST = async (req: NextRequest) => {
   const { providerAccountId } = await req.json()
