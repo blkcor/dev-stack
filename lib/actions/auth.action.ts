@@ -10,7 +10,8 @@ import { AuthCredential } from '@/types/action'
 
 import action from '../handlers/action'
 import { handleError } from '../handlers/error'
-import { SignUpSchema } from '../validation'
+import { NotFoundError } from '../http-errors'
+import { SignUpSchema, SignInSchema } from '../validation'
 
 export const signUpWithCredentials = async (params: AuthCredential): Promise<ActionResponse> => {
   const validatedResult = await action({
@@ -78,5 +79,53 @@ export const signUpWithCredentials = async (params: AuthCredential): Promise<Act
     return handleError(error, 'server') as ErrorResponse
   } finally {
     await session.endSession()
+  }
+}
+
+export const signInWithCredentials = async (
+  params: Pick<AuthCredential, 'email' | 'password'>
+): Promise<ActionResponse> => {
+  const validatedResult = await action({
+    params,
+    schema: SignInSchema,
+  })
+
+  if (validatedResult instanceof Error) {
+    return handleError(validatedResult, 'server') as ErrorResponse
+  }
+
+  const { password, email } = validatedResult.params!
+
+  try {
+    const existingUser = await User.findOne({ email })
+    if (!existingUser) {
+      throw new NotFoundError('User')
+    }
+
+    const existingAccount = await Account.findOne({
+      provider: 'credentials',
+      providerAccountId: email,
+    })
+
+    if (!existingAccount) {
+      throw new NotFoundError('Account')
+    }
+
+    // compare the password
+    const isValid = await bcrypt.compare(password, existingAccount.password!)
+    if (!isValid) {
+      throw new Error('Invalid password')
+    }
+
+    // after finishing the sign up, we sign in it
+    await signIn('credentials', {
+      email,
+      password,
+      redirect: false,
+    })
+
+    return { success: true }
+  } catch (error) {
+    return handleError(error, 'server') as ErrorResponse
   }
 }
