@@ -32,7 +32,7 @@ const SocialAuthForm = () => {
       {authList.map(({ provider, icon }) => (
         <Button
           key={provider}
-          className='!background-light900_dark400 body-medium text-dark200_light800 rounded-2 min-h-12 flex-1 cursor-pointer px-4 py-3.5'
+          className='background-light900_dark400 body-medium text-dark200_light800 rounded-2 min-h-12 flex-1 cursor-pointer px-4 py-3.5'
           onClick={() => handleSignIn(provider)}
         >
           <Icon icon={icon} className='mr-2.5 h-5 w-5' />

@@ -93,7 +93,7 @@ const QuestionForm = () => {
               </FormLabel>
               <FormControl>
                 <Input
-                  className='paragraph-regular background- light-border-2 text-dark300_light700 no-focus min-h-[56px] border'
+                  className='paragraph-regular background- light-border-2 text-dark300_light700 no-focus min-h-14 border'
                   placeholder='please enter question title...'
                   {...field}
                 />
@@ -138,7 +138,7 @@ const QuestionForm = () => {
               <FormControl>
                 <div>
                   <Input
-                    className='paragraph-regular background- light-border-2 text-dark300_light700 no-focus min-h-[56px] border'
+                    className='paragraph-regular background- light-border-2 text-dark300_light700 no-focus min-h-14 border'
                     placeholder='Add tags...'
                     onKeyDown={e => handleAddTag(e, field)}
                   />
@@ -167,7 +167,7 @@ const QuestionForm = () => {
           )}
         />
         <div className='mt-16 flex justify-end'>
-          <Button type='submit' className='primary-gradient !text-light-900'>
+          <Button type='submit' className='primary-gradient text-light-900'>
             Ask Question
           </Button>
         </div>
