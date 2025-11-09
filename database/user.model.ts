@@ -8,11 +8,12 @@ export interface IUser {
   avatar: string
   location?: string
   portfolio?: string
-  reputation: number
+  reputation?: number
 }
 
 const UserSchema = new Schema<IUser>(
   {
+    // the name is
     name: { type: String, required: true },
     username: { type: String, required: true },
     email: { type: String, required: true, unique: true },

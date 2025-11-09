@@ -33,21 +33,41 @@ const dbConnect = async (): Promise<Mongoose> => {
     return cached.conn
   }
   if (!cached.promise) {
+    // Extract cluster hostname for diagnostics
+    const clusterMatch = MONGODB_URI.match(/@([^/]+)\//)
+    const clusterHost = clusterMatch ? clusterMatch[1] : 'unknown'
+    logger.info(`Attempting to connect to MongoDB cluster: ${clusterHost}`)
+
     cached.promise = mongoose
       .connect(MONGODB_URI, {
         dbName: 'devstack',
+        serverSelectionTimeoutMS: 60000, // Increased to 60 seconds
+        socketTimeoutMS: 75000, // 75 seconds socket timeout
+        connectTimeoutMS: 60000, // 60 seconds connection timeout
+        maxPoolSize: 10,
+        minPoolSize: 2,
+        retryWrites: true,
+        retryReads: true,
+        // Additional options for better connectivity in restricted networks
+        family: 4, // Force IPv4 (IPv6 can cause issues in some networks)
+        directConnection: false, // Use SRV connection for better reliability
       })
       .then(result => {
-        logger.info('Connected to mongodb')
+        logger.info('✅ Successfully connected to MongoDB')
         return result
       })
       .catch(err => {
-        logger.error('Error connecting to mongodb, ' + MONGODB_URI)
+        logger.error(`❌ Failed to connect to MongoDB cluster: ${clusterHost}`)
+        logger.error('Connection error details:', {
+          message: err.message,
+          name: err.name,
+          code: err.code,
+        })
         throw err
       })
   }
 
-  logger.info('Create a new mongoose connection')
+  logger.info('Creating new mongoose connection...')
   cached.conn = await cached.promise
   return cached.conn
 }

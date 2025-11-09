@@ -1,5 +1,6 @@
 import { z } from 'zod'
 
+import { authProviders } from '@/consts/auth'
 export const SignInSchema = z.object({
   email: z
     .email({
@@ -185,4 +186,36 @@ export const AccountSchema = z.object({
     .min(1, {
       error: 'Provider Account ID is required',
     }),
+})
+
+export const SignInWithOAuthSchema = z.object({
+  provider: z.enum(authProviders),
+  providerAccountId: z.string().min(1, {
+    error: 'Provider Account ID is required.',
+  }),
+  user: z.object({
+    name: z
+      .string({
+        error: iss => (iss.input === undefined ? 'Name is required.' : 'Invalid Name input.'),
+      })
+      .min(1, {
+        error: 'Name is required',
+      }),
+    username: z
+      .string({
+        error: iss =>
+          iss.input === undefined ? 'Username is required.' : 'Invalid Username input.',
+      })
+      .min(3, {
+        error: 'Username must be at least 3',
+      }),
+    email: z.email({
+      error: iss => (iss.input === undefined ? 'Email is required' : 'Invalid Email input.'),
+    }),
+    avatar: z
+      .url({
+        error: 'Please provide a valid avatar',
+      })
+      .optional(),
+  }),
 })

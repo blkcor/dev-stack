@@ -1,10 +1,23 @@
-import { IAccount } from '@/database/account.model'
+import { IAccount, IAccountDoc } from '@/database/account.model'
 import { IUser } from '@/database/user.model'
 import { fetchHandler } from '@/lib/handlers/fetch'
+import { SignInWithOAuthParams } from '@/types/action'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000/api'
 
 export const api = {
+  auth: {
+    signInWithOAuth: ({ provider, providerAccountId, user }: SignInWithOAuthParams) =>
+      fetchHandler(`${API_BASE_URL}/auth/signin-with-oauth`, {
+        method: 'POST',
+        body: JSON.stringify({
+          provider,
+          providerAccountId,
+          user,
+        }),
+        timeout: 90000, // 90 seconds to account for 60s MongoDB connection + processing time
+      }),
+  },
   users: {
     getAll: () => fetchHandler(`${API_BASE_URL}/users`),
     getById: (id: string) => fetchHandler(`${API_BASE_URL}/users/${id}`),
@@ -35,7 +48,7 @@ export const api = {
     getAll: () => fetchHandler(`${API_BASE_URL}/accounts`),
     getById: (id: string) => fetchHandler(`${API_BASE_URL}/accounts/${id}`),
     getByProvider: (providerAccountId: string) =>
-      fetchHandler(`${API_BASE_URL}/accounts/provider`, {
+      fetchHandler<IAccountDoc>(`${API_BASE_URL}/accounts/provider`, {
         method: 'POST',
         body: JSON.stringify({
           providerAccountId,

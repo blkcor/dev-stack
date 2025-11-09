@@ -1,6 +1,5 @@
 // RequestInit represents the set of options that can be used to configure a fetch request
 // reference to: https://developer.mozilla.org/en-US/docs/Web/API/RequestInit
-import { clearTimeout } from 'node:timers'
 
 import { handleError } from '@/lib/handlers/error'
 import { RequestError } from '@/lib/http-errors'
