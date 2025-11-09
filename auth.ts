@@ -7,9 +7,6 @@ import { api } from '@/lib/api'
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [GitHub, Google],
-  // 1. we will check if the sign-in account type is "credentials", if yes, we will handle it
-  // the other way around when doing email-password based authentication
-  // 2. but if the account type is not credentials, we will call this new 'signin-with-oauth' app and create OAuth account
   callbacks: {
     session: async ({ session, token }) => {
       session.user.id = token.sub as string
@@ -34,6 +31,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return token
     },
     signIn: async ({ user, profile, account }) => {
+      // 1. we will check if the sign-in account type is "credentials", if yes, we will handle it
+      // the other way around when doing email-password based authentication
+      // 2. but if the account type is not credentials, we will call this new 'signin-with-oauth' app and create OAuth account
       if (account?.type === 'credentials') return true
       if (!account || !user) return false
 

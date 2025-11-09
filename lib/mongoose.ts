@@ -58,11 +58,13 @@ const dbConnect = async (): Promise<Mongoose> => {
       })
       .catch(err => {
         logger.error(`❌ Failed to connect to MongoDB cluster: ${clusterHost}`)
-        logger.error('Connection error details:', {
-          message: err.message,
-          name: err.name,
-          code: err.code,
-        })
+        logger.error(
+          `Connection error details:${JSON.stringify({
+            message: err.message,
+            name: err.name,
+            code: err.code,
+          })}`
+        )
         throw err
       })
   }
