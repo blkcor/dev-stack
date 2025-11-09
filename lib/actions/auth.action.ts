@@ -3,7 +3,7 @@
 import bcrypt from 'bcryptjs'
 import mongoose from 'mongoose'
 
-import { signIn } from '@/auth'
+import { signIn, signOut } from '@/auth'
 import Account from '@/database/account.model'
 import User from '@/database/user.model'
 import { AuthCredential } from '@/types/action'
@@ -124,6 +124,15 @@ export const signInWithCredentials = async (
       redirect: false,
     })
 
+    return { success: true }
+  } catch (error) {
+    return handleError(error, 'server') as ErrorResponse
+  }
+}
+
+export const signOutAction = async (): Promise<ActionResponse> => {
+  try {
+    await signOut({ redirect: false })
     return { success: true }
   } catch (error) {
     return handleError(error, 'server') as ErrorResponse

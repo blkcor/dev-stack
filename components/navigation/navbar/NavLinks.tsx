@@ -11,9 +11,10 @@ import { cn } from '@/lib/utils'
 
 interface Props {
   isMobile?: boolean
+  userId?: string
 }
 
-const NavLinks = ({ isMobile }: Props) => {
+const NavLinks = ({ isMobile, userId }: Props) => {
   const pathname = usePathname()
   return (
     <>
@@ -24,7 +25,7 @@ const NavLinks = ({ isMobile }: Props) => {
         const linkComponent = (
           <Link
             key={link.label}
-            href={link.route}
+            href={link.route.includes('profile') ? link.route + `/${userId}` : link.route}
             className={cn(
               'flex items-center justify-start gap-4 bg-transparent p-4 transition-all duration-200 ease-in-out',
               isActive
