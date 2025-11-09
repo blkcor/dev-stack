@@ -3,6 +3,7 @@
 import React from 'react'
 
 import AuthForm from '@/components/forms/AuthForm'
+import { signUpWithCredentials } from '@/lib/actions/auth.action'
 import { SignUpSchema } from '@/lib/validation'
 
 const SignUp = () => {
@@ -16,11 +17,7 @@ const SignUp = () => {
         email: '',
         password: '',
       }}
-      onSubmit={(data: any) =>
-        Promise.resolve({
-          success: false,
-        })
-      }
+      onSubmit={signUpWithCredentials}
     />
   )
 }

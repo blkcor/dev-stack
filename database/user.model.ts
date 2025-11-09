@@ -1,4 +1,4 @@
-import { model, models, Schema, Model } from 'mongoose'
+import { model, models, Schema, Model, Document, Types } from 'mongoose'
 
 export interface IUser {
   name: string
@@ -11,10 +11,14 @@ export interface IUser {
   reputation?: number
 }
 
+export interface IUserDoc extends Omit<Document, 'location'>, IUser {
+  _id: Types.ObjectId
+}
 const UserSchema = new Schema<IUser>(
   {
-    // the name is
+    // the name is designed for display the user name(can contain some special characters)
     name: { type: String, required: true },
+    // the username is designed for system internal use for url(/profile/xxx, can't contain special characters)
     username: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     bio: { type: String },

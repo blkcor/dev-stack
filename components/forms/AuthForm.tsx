@@ -1,9 +1,13 @@
 'use client'
 
+
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Icon } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import type { SubmitHandler, DefaultValues, FieldValues, Path } from 'react-hook-form'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z, type ZodType } from 'zod'
 
 import { Button } from '@/components/ui/button'
@@ -21,7 +25,7 @@ import ROUTES from '@/constants/routes'
 interface AuthFormProps<T extends FieldValues> {
   schema: ZodType<T, any, any>
   defaultValues: T
-  onSubmit: (data: T) => Promise<{ success: boolean }>
+  onSubmit: (data: T) => Promise<ActionResponse>
   formType: 'SIGN_IN' | 'SIGN_UP'
 }
 
@@ -31,13 +35,26 @@ const AuthForm = <T extends FieldValues>({
   defaultValues,
   onSubmit,
 }: AuthFormProps<T>) => {
+  const router = useRouter()
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: defaultValues as DefaultValues<T>,
   })
 
   const handleSubmit: SubmitHandler<T> = async data => {
-    await onSubmit(data)
+    const result = await onSubmit(data)
+    if (result.success) {
+      toast.success('Success', {
+        description: formType === 'SIGN_IN' ? 'Sign in successful' : 'Sign up successful',
+        position: 'top-center',
+      })
+      router.push(ROUTES.HOME)
+    } else {
+      toast.error(`Error ${result.status}`, {
+        description: result?.error?.message,
+        position: 'top-center',
+      })
+    }
   }
 
   const buttonText = formType === 'SIGN_IN' ? 'Sign-in' : 'Sign-up'
@@ -80,7 +97,7 @@ const AuthForm = <T extends FieldValues>({
 
         {formType === 'SIGN_IN' ? (
           <p>
-            Dont have an account?{' '}
+            Do not have an account?{' '}
             <Link
               className='paragraph-semibold primary-text-gradient hover:opacity-90'
               href={ROUTES.SIGN_UP}

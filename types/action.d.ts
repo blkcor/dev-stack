@@ -10,3 +10,10 @@ export interface SignInWithOAuthParams {
     email: string
   }
 }
+
+export interface AuthCredential {
+  name: string
+  username: string
+  email: string
+  password: string
+}

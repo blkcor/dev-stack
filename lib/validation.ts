@@ -60,13 +60,13 @@ export const SignUpSchema = z.object({
     .max(100, {
       error: 'Password cannot exceed 100 characters long',
     })
-    .regex(/A-Z/, {
+    .regex(/[A-Z]/, {
       error: 'Password must contain at least one uppercase letter',
     })
-    .regex(/a-z/, {
+    .regex(/[a-z]/, {
       error: 'Password must contain at least one lowercase letter',
     })
-    .regex(/0-9/, {
+    .regex(/[0-9]/, {
       error: 'Password must contain at least one number',
     })
     .regex(/[^a-zA-Z0-9]/, {
@@ -157,13 +157,13 @@ export const AccountSchema = z.object({
     .max(100, {
       error: 'Password cannot exceed 100 characters long',
     })
-    .regex(/A-Z/, {
+    .regex(/[A-Z]/, {
       error: 'Password must contain at least one uppercase letter',
     })
-    .regex(/a-z/, {
+    .regex(/[a-z]/, {
       error: 'Password must contain at least one lowercase letter',
     })
-    .regex(/0-9/, {
+    .regex(/[0-9]/, {
       error: 'Password must contain at least one number',
     })
     .regex(/[^a-zA-Z0-9]/, {

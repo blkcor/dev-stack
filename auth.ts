@@ -1,12 +1,56 @@
+import bcrypt from 'bcryptjs'
 import NextAuth from 'next-auth'
+import Credentials from 'next-auth/providers/credentials'
 import GitHub from 'next-auth/providers/github'
 import Google from 'next-auth/providers/google'
 
 import { authProviders } from '@/consts/auth'
+import { IUserDoc } from '@/database/user.model'
 import { api } from '@/lib/api'
+import { SignInSchema } from '@/lib/validation'
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  providers: [GitHub, Google],
+  providers: [
+    GitHub,
+    Google,
+    Credentials({
+      async authorize(credentials) {
+        const validatedFields = SignInSchema.safeParse(credentials)
+        if (!validatedFields.success) {
+          return null
+        }
+
+        const { email, password } = validatedFields.data
+        // get account info
+        const { data: existingAccount } = await api.accounts.getByProvider(email)
+        if (!existingAccount) {
+          return null
+        }
+
+        // get the user info
+        const { data: existingUser } = (await api.users.getById(
+          existingAccount.userId.toString()
+        )) as ActionResponse<IUserDoc>
+        if (!existingUser) {
+          return null
+        }
+
+        // if the password is correct
+        const isPasswordValid = await bcrypt.compare(password, existingAccount.password!)
+        if (!isPasswordValid) {
+          return null
+        }
+
+        // the returned value will be saved to the session
+        return {
+          id: existingUser._id.toString(),
+          name: existingUser.name,
+          email: existingUser.email,
+          image: existingUser.avatar,
+        }
+      },
+    }),
+  ],
   callbacks: {
     session: async ({ session, token }) => {
       session.user.id = token.sub as string

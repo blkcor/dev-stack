@@ -25,7 +25,7 @@ declare global {
     createdAt: Date
   }
 
-  type ActionResponse<T> = {
+  type ActionResponse<T = any> = {
     success: boolean
     data?: T
     error?: {
