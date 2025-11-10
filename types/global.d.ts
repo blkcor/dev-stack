@@ -40,4 +40,9 @@ declare global {
 
   type APIErrorResponse = NextResponse<ErrorResponse>
   type APIResponse<T> = NextResponse<SuccessResponse<T> | ErrorResponse>
+
+  type RouteParam = {
+    params: Promise<Record<string, string>>
+    searchParams: Promise<Record<string, string>>
+  }
 }
