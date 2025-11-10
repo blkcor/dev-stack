@@ -17,3 +17,9 @@ export interface AuthCredential {
   email: string
   password: string
 }
+
+export interface CreateQuestionParams {
+  title: string
+  content: string
+  tags: Array<string>
+}
