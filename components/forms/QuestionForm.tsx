@@ -24,8 +24,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import ROUTES from '@/constants/routes'
-import { IQuestionDoc } from '@/database/question.model'
-import { createQuestion } from '@/lib/actions/question.action'
+import { createQuestion, editQuestion } from '@/lib/actions/question.action'
 import { AskQuestionSchema } from '@/lib/validation'
 const Editor = dynamic(() => import('@/components/editor'), {
   ssr: false,
@@ -34,39 +33,54 @@ const Editor = dynamic(() => import('@/components/editor'), {
 
 interface QuestionFormProps {
   isEdit?: boolean
-  question?: IQuestionDoc
+  question?: Question
 }
 
 const QuestionForm = ({ isEdit, question }: QuestionFormProps) => {
+
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
 
   const form = useForm<z.infer<typeof AskQuestionSchema>>({
     resolver: zodResolver(AskQuestionSchema),
     defaultValues: {
-      title: '',
-      content: '',
-      tags: [],
+      title: question?.title || '',
+      content: question?.content || '',
+      tags: question?.tags?.map(t => t.name) || [],
     },
   })
 
   const handleCreateQuestion = async (data: z.infer<typeof AskQuestionSchema>) => {
+
     startTransition(async () => {
-      const result = await createQuestion(data)
-      if (result.success) {
-        toast.success("Success", {
-          description: 'Your question has been asked successfully'
-        })
-        if (result.data)
-          router.push(ROUTES.QUESTION(result.data._id.toString()))
+      if (isEdit && question) {
+        const result = await editQuestion({ questionId: question._id, ...data })
+        if (result.success) {
+          toast.success("Success", {
+            description: 'Your question has been updated successfully'
+          })
+          router.push(ROUTES.QUESTION(question._id.toString()))
+        } else {
+          toast.error(`Error ${result.status}`, {
+            description: result.error?.message || 'Something went wrong'
+          })
+        }
       } else {
-        toast.error(`Error ${result.status}`, {
-          description: result.error?.message || 'Something went wrong'
-        })
+        const result = await createQuestion(data)
+        if (result.success) {
+          toast.success("Success", {
+            description: 'Your question has been asked successfully'
+          })
+          if (result.data)
+            router.push(ROUTES.QUESTION(result.data._id.toString()))
+        } else {
+          toast.error(`Error ${result.status}`, {
+            description: result.error?.message || 'Something went wrong'
+          })
+        }
       }
     })
   }
-
 
   const handleAddTag = (
     e: React.KeyboardEvent<HTMLInputElement>,
@@ -196,14 +210,20 @@ const QuestionForm = ({ isEdit, question }: QuestionFormProps) => {
           )}
         />
         <div className='mt-16 flex justify-end'>
-          <Button type='submit' className='primary-gradient text-light-900' disabled={isPending}>
+
+
+          <Button
+            type='submit'
+            className='primary-gradient text-light-900 cursor-pointer px-10 transition-all duration-300 hover:scale-105 hover:bg-primary-600 hover:text-white'
+            disabled={isPending}
+          >
             {
               isPending ? (
                 <>
-                  <Icon icon="tabler:loader" className='animate-spin  mr-2 size-4' />
+                  <Icon icon="tabler:loader" className='animate-spin mr-2 size-4' />
                   <span>Submitting...</span>
                 </>
-              ) : <>Ask Question</>
+              ) : <>{isEdit ? 'Edit' : 'Ask Question'}</>
             }
           </Button>
         </div>
