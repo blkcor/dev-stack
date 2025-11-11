@@ -127,8 +127,6 @@ export const editQuestion = async (
     // get the question by id
     const question = await Question.findById(questionId).populate('tags')
 
-    console.log('question: ', question)
-
     if (!question) {
       throw new Error('The question is not exist')
     }
@@ -149,13 +147,9 @@ export const editQuestion = async (
         !question.tags?.map((tag: any) => tag.name.toLocaleLowerCase())?.includes(tag.toLowerCase())
     )
 
-    console.log('tagsToAdd: ', tagsToAdd)
-
     const tagsToRemove = question.tags?.filter(
       t => !tags.map(tag => tag.toLowerCase())?.includes((t as any).name.toLowerCase())
     )
-
-    console.log('tagsToRemove: ', tagsToRemove)
 
     const newTagQuestionDocuments = []
     if (tagsToAdd.length > 0) {
