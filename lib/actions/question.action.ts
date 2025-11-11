@@ -33,16 +33,18 @@ export const createQuestion = async (
 
   try {
     // create the question
-    const [question] = await Question.create([
-      {
-        title,
-        content,
-        author: userId,
-      },
+    const [question] = await Question.create(
+      [
+        {
+          title,
+          content,
+          author: userId,
+        },
+      ],
       {
         session,
-      },
-    ])
+      }
+    )
 
     if (!question) {
       throw new Error('Failed to create question')
@@ -142,7 +144,7 @@ export const editQuestion = async (
     const questionTags = await Tag.find({ _id: { $in: question.tags } }).exec()
 
     const tagsToAdd = tags.filter(
-      tag => !questionTags.map(tag => tag.name)?.includes(tag.toLowerCase())
+      tag => !questionTags.map(tag => tag.name.toLocaleLowerCase())?.includes(tag.toLowerCase())
     )
 
     const tagsToRemove = questionTags.filter(
@@ -226,7 +228,6 @@ export const getQuestion = async (params: GetQuestionParams): Promise<ActionResp
   const result = await action({
     params,
     schema: GetQuestionSchema,
-    authorize: true,
   })
 
   if (result instanceof Error) {
