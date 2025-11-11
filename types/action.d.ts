@@ -23,3 +23,11 @@ export interface CreateQuestionParams {
   content: string
   tags: Array<string>
 }
+
+export interface EditQuestionParams extends CreateQuestionParams {
+  questionId: string
+}
+
+export interface GetQuestionParams {
+  questionId: string
+}

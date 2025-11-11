@@ -38,6 +38,6 @@ export const navLinks: NavLink[] = [
   {
     icon: 'mingcute:question-line',
     label: 'Ask a Question',
-    route: '/questions',
+    route: '/questions/ask',
   },
 ]
