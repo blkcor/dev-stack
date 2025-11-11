@@ -1,9 +1,11 @@
-import { model, models, Schema, Types, Model } from 'mongoose'
+import { model, models, Schema, Types, Model, Document } from 'mongoose'
+
+import type { ITagDoc } from './tag.model'
 
 export interface IQuestion {
   title: string
   content: string
-  tags?: Array<Types.ObjectId>
+  tags: Types.ObjectId[]
   views: number
   upvotes: number
   downvotes: number
@@ -13,6 +15,11 @@ export interface IQuestion {
 
 export interface IQuestionDoc extends IQuestion, Document {
   _id: Types.ObjectId
+}
+
+// Type for populated question - using proper Mongoose typing
+export type IQuestionPopulated = Omit<IQuestionDoc, 'tags'> & {
+  tags: ITagDoc[]
 }
 
 const QuestionSchema = new Schema<IQuestion>(

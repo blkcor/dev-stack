@@ -2,7 +2,7 @@
 
 import mongoose from 'mongoose'
 
-import Question from '@/database/question.model'
+import Question, { IQuestionPopulated } from '@/database/question.model'
 import TagQuestion from '@/database/tag-question.model'
 import Tag from '@/database/tag.model'
 import { CreateQuestionParams, EditQuestionParams, GetQuestionParams } from '@/types/action'
@@ -124,8 +124,10 @@ export const editQuestion = async (
   session.startTransaction()
 
   try {
-    // get the question by id
-    const question = await Question.findById(questionId).populate('tags')
+    // get the question by id with populated tags
+    const question = (await Question.findById(questionId)
+      .populate('tags')
+      .session(session)) as IQuestionPopulated | null
 
     if (!question) {
       throw new Error('The question is not exist')
@@ -136,31 +138,61 @@ export const editQuestion = async (
       throw new Error('You are not authorized to edit this question')
     }
 
+    // Update title and content if changed
     if (question.title !== title || question.content !== content) {
-      question.title = title
-      question.content = content
-      await question.save({ session })
+      await Question.findByIdAndUpdate(
+        questionId,
+        { title, content },
+        { session }
+      )
     }
 
-    const tagsToAdd = tags.filter(
-      tag =>
-        !question.tags?.map((tag: any) => tag.name.toLocaleLowerCase())?.includes(tag.toLowerCase())
+    // Get existing tag names in lowercase
+    const existingTagNames = question.tags.map(tag => tag.name.toLowerCase())
+
+    // Find tags to add
+    const tagsToAdd = tags.filter(tag => !existingTagNames.includes(tag.toLowerCase()))
+
+    // Find tags to remove
+    const tagsToRemove = question.tags.filter(
+      tag => !tags.map(t => t.toLowerCase()).includes(tag.name.toLowerCase())
     )
 
-    const tagsToRemove = question.tags?.filter(
-      t => !tags.map(tag => tag.toLowerCase())?.includes((t as any).name.toLowerCase())
-    )
+    // Handle tags to remove
+    if (tagsToRemove.length > 0) {
+      const tagIdsToRemove = tagsToRemove.map(tag => tag._id)
 
-    const newTagQuestionDocuments = []
+      // Decrement question count for removed tags
+      await Tag.updateMany(
+        { _id: { $in: tagIdsToRemove } },
+        { $inc: { questions: -1 } },
+        { session }
+      )
+
+      // Remove TagQuestion relationships
+      await TagQuestion.deleteMany(
+        {
+          tag: { $in: tagIdsToRemove },
+          question: questionId,
+        },
+        { session }
+      )
+
+      // Remove tags from question
+      await Question.findByIdAndUpdate(
+        questionId,
+        { $pull: { tags: { $in: tagIdsToRemove } } },
+        { session }
+      )
+    }
+
+    // Handle tags to add
     if (tagsToAdd.length > 0) {
+      const newTagIds: mongoose.Types.ObjectId[] = []
+      const newTagQuestionDocuments = []
+
       for (const tag of tagsToAdd) {
         // Find or create a tag with case-insensitive matching
-        // - Uses regex with 'i' flag to match tag name case-insensitively
-        // - $setOnInsert: Only sets the 'name' field when creating a new tag (on insert)
-        // - $inc: Increments the 'questions' counter by 1 for both existing and new tags
-        // - upsert: true - Creates a new tag if no match is found
-        // - new: true - Returns the modified/created document instead of the original
-        // - session: Ensures this operation is part of the transaction
         const existingTag = await Tag.findOneAndUpdate(
           {
             name: { $regex: new RegExp(`^${tag}$`, 'i') },
@@ -176,47 +208,32 @@ export const editQuestion = async (
           }
         )
 
+        newTagIds.push(existingTag._id)
         newTagQuestionDocuments.push({
           tag: existingTag._id,
           question: questionId,
         })
-        question?.tags?.push(existingTag._id)
       }
-    }
 
-    if (tagsToRemove && tagsToRemove.length > 0) {
-      const tagIdsToRemove = tagsToRemove?.map(tag => tag._id)
-      await Tag.updateMany(
-        { _id: { $in: tagIdsToRemove } },
-        { $inc: { questions: -1 } },
-        { session }
-      )
-
-      // unrelated the tag from the question
-      await TagQuestion.deleteMany(
-        {
-          tag: { $in: tagIdsToRemove },
-          question: questionId,
-        },
-        { session }
-      )
-
-      // remove the tag from the question
-      question.tags = question.tags?.filter(
-        tag => !tagIdsToRemove.some(removeId => removeId.equals(tag._id))
-      )
-    }
-
-    if (newTagQuestionDocuments.length > 0) {
+      // Create TagQuestion relationships
       await TagQuestion.insertMany(newTagQuestionDocuments, { session })
+
+      // Add tags to question
+      await Question.findByIdAndUpdate(
+        questionId,
+        { $push: { tags: { $each: newTagIds } } },
+        { session }
+      )
     }
 
-    await question.save({ session })
     await session.commitTransaction()
+
+    // Fetch the updated question
+    const updatedQuestion = await Question.findById(questionId).populate('tags')
 
     return {
       success: true,
-      data: JSON.parse(JSON.stringify(question)),
+      data: JSON.parse(JSON.stringify(updatedQuestion)),
     }
   } catch (error) {
     await session.abortTransaction()
