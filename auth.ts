@@ -61,7 +61,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         // if the user signin with email and password
         // the providerAccountId is the email
         // otherwise, the providerAccountId is the providerAccountId
-        console.log('Account: ', account)
         const { data: existingAccount, success } = await api.accounts.getByProvider(
           account.type === 'credentials' ? token.email! : account.providerAccountId
         )

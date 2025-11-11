@@ -127,6 +127,8 @@ export const editQuestion = async (
     // get the question by id
     const question = await Question.findById(questionId).populate('tags')
 
+    console.log('question: ', question)
+
     if (!question) {
       throw new Error('The question is not exist')
     }
@@ -141,15 +143,19 @@ export const editQuestion = async (
       question.content = content
       await question.save({ session })
     }
-    const questionTags = await Tag.find({ _id: { $in: question.tags } }).exec()
 
     const tagsToAdd = tags.filter(
-      tag => !questionTags.map(tag => tag.name.toLocaleLowerCase())?.includes(tag.toLowerCase())
+      tag =>
+        !question.tags?.map((tag: any) => tag.name.toLocaleLowerCase())?.includes(tag.toLowerCase())
     )
 
-    const tagsToRemove = questionTags.filter(
-      t => !tags.map(tag => tag.toLowerCase())?.includes(t.name.toLowerCase())
+    console.log('tagsToAdd: ', tagsToAdd)
+
+    const tagsToRemove = question.tags?.filter(
+      t => !tags.map(tag => tag.toLowerCase())?.includes((t as any).name.toLowerCase())
     )
+
+    console.log('tagsToRemove: ', tagsToRemove)
 
     const newTagQuestionDocuments = []
     if (tagsToAdd.length > 0) {
@@ -184,8 +190,8 @@ export const editQuestion = async (
       }
     }
 
-    if (tagsToRemove.length > 0) {
-      const tagIdsToRemove = tagsToRemove.map(tag => tag._id)
+    if (tagsToRemove && tagsToRemove.length > 0) {
+      const tagIdsToRemove = tagsToRemove?.map(tag => tag._id)
       await Tag.updateMany(
         { _id: { $in: tagIdsToRemove } },
         { $inc: { questions: -1 } },
@@ -202,7 +208,9 @@ export const editQuestion = async (
       )
 
       // remove the tag from the question
-      question.tags = question.tags?.filter(tag => !tagIdsToRemove.includes(tag))
+      question.tags = question.tags?.filter(
+        tag => !tagIdsToRemove.some(removeId => removeId.equals(tag._id))
+      )
     }
 
     if (newTagQuestionDocuments.length > 0) {
