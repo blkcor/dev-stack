@@ -5,6 +5,10 @@ export interface ICollection {
   question: Types.ObjectId
 }
 
+export interface ICollectionDoc extends ICollection, Document {
+  _id: Types.ObjectId
+}
+
 const CollectionSchema = new Schema<ICollection>(
   {
     author: { type: Schema.Types.ObjectId, ref: 'User', required: true },

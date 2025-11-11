@@ -24,13 +24,20 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import ROUTES from '@/constants/routes'
+import { IQuestionDoc } from '@/database/question.model'
 import { createQuestion } from '@/lib/actions/question.action'
 import { AskQuestionSchema } from '@/lib/validation'
 const Editor = dynamic(() => import('@/components/editor'), {
   ssr: false,
 })
 
-const QuestionForm = () => {
+
+interface QuestionFormProps {
+  isEdit?: boolean
+  question?: IQuestionDoc
+}
+
+const QuestionForm = ({ isEdit, question }: QuestionFormProps) => {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
 
@@ -51,7 +58,7 @@ const QuestionForm = () => {
           description: 'Your question has been asked successfully'
         })
         if (result.data)
-          router.push(ROUTES.QUESTION(result.data._id))
+          router.push(ROUTES.QUESTION(result.data._id.toString()))
       } else {
         toast.error(`Error ${result.status}`, {
           description: result.error?.message || 'Something went wrong'

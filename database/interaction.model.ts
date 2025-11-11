@@ -9,6 +9,10 @@ export interface IInteraction {
   actionType: 'question' | 'answer'
 }
 
+export interface IInteractionDoc extends IInteraction, Document {
+  _id: Types.ObjectId
+}
+
 const InteractionSchema = new Schema<IInteraction>(
   {
     user: { type: Schema.Types.ObjectId, ref: 'User', required: true },

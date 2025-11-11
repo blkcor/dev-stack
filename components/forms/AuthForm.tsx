@@ -2,7 +2,6 @@
 
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Icon } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { SubmitHandler, DefaultValues, FieldValues, Path } from 'react-hook-form'

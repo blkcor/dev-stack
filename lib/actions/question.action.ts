@@ -2,7 +2,7 @@
 
 import mongoose from 'mongoose'
 
-import Question from '@/database/question.model'
+import Question, { IQuestionDoc } from '@/database/question.model'
 import TagQuestion from '@/database/tag-question.model'
 import Tag from '@/database/tag.model'
 import { CreateQuestionParams, EditQuestionParams, GetQuestionParams } from '@/types/action'
@@ -13,7 +13,7 @@ import { AskQuestionSchema, EditQuestionSchema, GetQuestionSchema } from '../val
 
 export const createQuestion = async (
   params: CreateQuestionParams
-): Promise<ActionResponse<Question>> => {
+): Promise<ActionResponse<IQuestionDoc>> => {
   const result = await action({
     params,
     schema: AskQuestionSchema,
@@ -105,7 +105,7 @@ export const createQuestion = async (
 
 export const editQuestion = async (
   params: EditQuestionParams
-): Promise<ActionResponse<Question>> => {
+): Promise<ActionResponse<IQuestionDoc>> => {
   const result = await action({
     params,
     schema: EditQuestionSchema,
@@ -224,7 +224,9 @@ export const editQuestion = async (
   }
 }
 
-export const getQuestion = async (params: GetQuestionParams): Promise<ActionResponse<Question>> => {
+export const getQuestion = async (
+  params: GetQuestionParams
+): Promise<ActionResponse<IQuestionDoc>> => {
   const result = await action({
     params,
     schema: GetQuestionSchema,

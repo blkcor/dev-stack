@@ -6,8 +6,10 @@
  * especially useful in restricted networks (e.g., China mainland with VPN)
  */
 
-const mongoose = require('mongoose')
 const dns = require('dns').promises
+
+const mongoose = require('mongoose')
+
 
 // Load environment variables
 require('dotenv').config({ path: '.env.local' })

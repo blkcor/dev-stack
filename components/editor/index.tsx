@@ -2,7 +2,7 @@
 
 import './dark-editor.css'
 import '@mdxeditor/editor/style.css'
-import { type Extension } from '@codemirror/state'
+
 import {
   headingsPlugin,
   listsPlugin,

@@ -9,7 +9,9 @@ export interface IAccount {
   providerAccountId: string
 }
 
-export interface IAccountDoc extends IAccount, Document {}
+export interface IAccountDoc extends IAccount, Document {
+  _id: Types.ObjectId
+}
 
 const AccountSchema = new Schema<IAccount>(
   {
