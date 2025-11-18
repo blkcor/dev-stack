@@ -20,7 +20,6 @@ const NavBar = async () => {
       </Link>
       {/* TODO: global search */}
       <p>Global Search</p>
-      <p>{session?.user?.name}</p>
       <div className='flex-between gap-5'>
         <Theme />
         {
