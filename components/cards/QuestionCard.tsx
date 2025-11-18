@@ -1,6 +1,5 @@
 // 'use client'
 
-import Image from 'next/image'
 import Link from 'next/link'
 import * as React from 'react'
 
@@ -8,6 +7,8 @@ import TagCard from '@/components/cards/TagCard'
 import Matric from '@/components/Matric'
 import ROUTES from '@/constants/routes'
 import { getTimeStamp } from '@/lib/utils'
+
+import UserAvatar from '../UserAvatar'
 
 type Props = {
   question: Question
@@ -18,7 +19,7 @@ const QuestionCard = ({ question }: Props) => {
       <div className='flex flex-col-reverse items-start justify-between gap-5 sm:flex-row'>
         <div>
           <span className='text-dark400_light700 line-clamp-1 flex text-sm sm:hidden'>
-            {getTimeStamp(question.createdAt)}
+            {getTimeStamp(new Date(question.createdAt))}
           </span>
 
           <Link href={ROUTES.QUESTION(question._id)}>
@@ -38,21 +39,14 @@ const QuestionCard = ({ question }: Props) => {
       <div className='flex-between mt-6 flex w-full flex-wrap gap-3'>
         {/* Author */}
         <div className='flex items-center gap-2'>
-          <Image
-            src={question.author.avatar}
-            alt={question.author.name}
-            width={30}
-            height={30}
-            className='rounded-full'
-            unoptimized
-          />
+          <UserAvatar id={question.author._id} name={question.author.name} imageUrl={question.author.avatar} className='size-7.5!' />
           <Link href={ROUTES.PROFILE(question.author._id)}>
             <span className='text-dark400_light700 hover:text-primary-500 text-sm font-medium transition-colors duration-200'>
               {question.author.name}
             </span>
           </Link>
           <span className='text-dark400_light700 text-sm max-sm:hidden'>
-            • asked {getTimeStamp(question.createdAt)}
+            • asked {getTimeStamp(new Date(question.createdAt))}
           </span>
         </div>
         {/*  Matrices */}

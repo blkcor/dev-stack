@@ -1,100 +1,30 @@
 import Link from 'next/link'
-import { use } from 'react'
+
 
 import QuestionCard from '@/components/cards/QuestionCard'
 import HomeFilter from '@/components/filters/HomeFilter'
 import LocalSearch from '@/components/search/LocalSearch'
 import { Button } from '@/components/ui/button'
 import ROUTES from '@/constants/routes'
+import { getQuestions } from '@/lib/actions/question.action'
 
-// TODO: replace the static data with the dynamic data from the backend
-const questions: Question[] = [
+/**
+ * questions [
   {
-    _id: '1',
-    title: 'How to learn React?',
-    tags: [
-      { _id: '1', name: 'react' },
-      { _id: '2', name: 'javascript' },
-    ],
-    author: {
-      _id: '1',
-      name: 'John Doe',
-      avatar: 'https://api.dicebear.com/9.x/adventurer/svg?seed=Kimberly',
-    },
-    upvotes: 2300,
-    answers: 4,
-    views: 120,
-    createdAt: new Date('2025-09-01T10:00:00'),
+    _id: '691354f1ad371e7bf5aa5614',
+    title: 'How to learn frontend?',
+    content: 'How to learn frontend, can any one could give some learning path for frontend?',
+    tags: [ [Object], [Object] ],
+    views: 0,
+    upvotes: 0,
+    downvotes: 0,
+    answers: 0,
+    author: { _id: '6910942c8a6b9556b192313c', name: 'blkcor' },
+    createdAt: '2025-11-11T15:23:29.254Z',
+    updatedAt: '2025-11-11T15:56:55.101Z',
+    __v: 3
   },
-  {
-    _id: '2',
-    title: 'Difference between useEffect and useLayoutEffect?',
-    tags: [
-      { _id: '3', name: 'react-hooks' },
-      { _id: '2', name: 'javascript' },
-    ],
-    author: {
-      _id: '2',
-      name: 'Alice Johnson',
-      avatar: 'https://api.dicebear.com/9.x/adventurer/svg?seed=Kimberly',
-    },
-    upvotes: 23,
-    answers: 6,
-    views: 250,
-    createdAt: new Date('2025-09-03T15:32:00'),
-  },
-  {
-    _id: '3',
-    title: 'What is a closure in JavaScript?',
-    tags: [
-      { _id: '2', name: 'javascript' },
-      { _id: '4', name: 'functional-programming' },
-    ],
-    author: {
-      _id: '3',
-      name: 'Robert Miles',
-      avatar: 'https://api.dicebear.com/9.x/adventurer/svg?seed=Kimberly',
-    },
-    upvotes: 45,
-    answers: 10,
-    views: 560,
-    createdAt: new Date('2025-09-04T09:15:00'),
-  },
-  {
-    _id: '4',
-    title: 'How does async/await work under the hood?',
-    tags: [
-      { _id: '5', name: 'async-await' },
-      { _id: '2', name: 'javascript' },
-    ],
-    author: {
-      _id: '4',
-      name: 'Emily Carter',
-      avatar: 'https://api.dicebear.com/9.x/adventurer/svg?seed=Kimberly',
-    },
-    upvotes: 31,
-    answers: 5,
-    views: 4700,
-    createdAt: new Date('2025-09-06T18:00:00'),
-  },
-  {
-    _id: '5',
-    title: 'Best practices for structuring a Next.js app?',
-    tags: [
-      { _id: '6', name: 'nextjs' },
-      { _id: '7', name: 'architecture' },
-    ],
-    author: {
-      _id: '5',
-      name: 'Sophia Lin',
-      avatar: 'https://api.dicebear.com/9.x/adventurer/svg?seed=Kimberly',
-    },
-    upvotes: 18,
-    answers: 3,
-    views: 320,
-    createdAt: new Date('2025-09-07T13:20:00'),
-  },
-]
+ */
 
 interface SearchParamsProps {
   /**
@@ -102,15 +32,17 @@ interface SearchParamsProps {
    */
   searchParams: Promise<{ [key: string]: string }>
 }
-export default function Home({ searchParams }: SearchParamsProps) {
-  const { query, filter } = use(searchParams)
+export default async function Home({ searchParams }: SearchParamsProps) {
+  const { page, pageSize, query, filter } = await searchParams
 
-  // TODO: add the filter logic with the tag filter => filter query params
-  console.log(filter)
+  const { data } = await getQuestions({ page: Number(page) || 1, pageSize: Number(pageSize) || 10, query: query || '', filter: filter || '' })
 
-  const filteredQuestions = questions.filter(question =>
-    question.title.toLowerCase().includes(query?.toLowerCase() || '')
-  )
+  const { questions } = data || {}
+
+
+  // const filteredQuestions = questions?.filter(question =>
+  //   question.title.toLowerCase().includes(query?.toLowerCase() || '')
+  // )
   return (
     <>
       <section className='flex w-full flex-col-reverse justify-between gap-4 sm:flex-row sm:items-center'>
@@ -136,9 +68,11 @@ export default function Home({ searchParams }: SearchParamsProps) {
 
       {/* Question Cards */}
       <div className='mt-10 flex w-full flex-col gap-6'>
-        {filteredQuestions.map(question => (
+        {questions && questions.length > 0 ? questions.map(question => (
           <QuestionCard key={question._id} question={question} />
-        ))}
+        )) : (
+          <div>No questions found.</div>
+        )}
       </div>
     </>
   )

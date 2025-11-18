@@ -1,6 +1,6 @@
 'use server'
 
-import mongoose from 'mongoose'
+import mongoose, { FilterQuery } from 'mongoose'
 
 import Question, { IQuestionPopulated } from '@/database/question.model'
 import TagQuestion from '@/database/tag-question.model'
@@ -9,7 +9,13 @@ import { CreateQuestionParams, EditQuestionParams, GetQuestionParams } from '@/t
 
 import action from '../handlers/action'
 import { handleError } from '../handlers/error'
-import { AskQuestionSchema, EditQuestionSchema, GetQuestionSchema } from '../validation'
+import { logger } from '../logger'
+import {
+  AskQuestionSchema,
+  EditQuestionSchema,
+  GetQuestionSchema,
+  PaginatedQueryParamsSchema,
+} from '../validation'
 
 export const createQuestion = async (
   params: CreateQuestionParams
@@ -140,11 +146,7 @@ export const editQuestion = async (
 
     // Update title and content if changed
     if (question.title !== title || question.content !== content) {
-      await Question.findByIdAndUpdate(
-        questionId,
-        { title, content },
-        { session }
-      )
+      await Question.findByIdAndUpdate(questionId, { title, content }, { session })
     }
 
     // Get existing tag names in lowercase
@@ -266,5 +268,78 @@ export const getQuestion = async (params: GetQuestionParams): Promise<ActionResp
     }
   } catch (error) {
     return handleError(error, 'server') as ErrorResponse
+  }
+}
+
+export const getQuestions = async (
+  params: PaginatedQueryParams
+): Promise<
+  ActionResponse<{
+    questions: Question[]
+    isNext: boolean
+  }>
+> => {
+  const validatedResult = await action({
+    params,
+    schema: PaginatedQueryParamsSchema,
+  })
+  if (validatedResult instanceof Error) {
+    return handleError(validatedResult, 'server') as ErrorResponse
+  }
+
+  const { page = 1, pageSize = 10, query, filter } = validatedResult.params!
+  const skip = (page - 1) * pageSize
+  const limit = pageSize
+
+  const filterQuery: FilterQuery<typeof Question> = {}
+
+  // TODO: Implement the recommended query logic later
+  if (query === 'recommended') {
+    return { success: true, data: { questions: [], isNext: false } }
+  }
+
+  if (query) {
+    filterQuery.$or = [
+      { title: { $regex: query, $options: 'i' } },
+      { content: { $regex: query, $options: 'i' } },
+    ]
+  }
+
+  let sortCriteria = {}
+
+  // fill the sortCriteria by the filter
+  switch (filter) {
+    case 'newest':
+      sortCriteria = { createdAt: -1 }
+      break
+    case 'unanswered':
+      filterQuery.answers = 0
+      sortCriteria = { createdAt: -1 }
+      break
+    case 'popular':
+      sortCriteria = { upvotes: -1 }
+      break
+    default:
+      sortCriteria = { upvotes: -1 }
+  }
+  try {
+    const totalQuestions = await Question.countDocuments(filterQuery)
+
+    const questions = await Question.find(filterQuery)
+      .populate('tags', 'name')
+      .populate('author')
+      .lean()
+      .sort(sortCriteria)
+      .skip(skip)
+      .limit(limit)
+    logger.info(`questions, ${JSON.stringify(questions)}`)
+    const isNext = questions.length + skip < totalQuestions
+
+    return {
+      success: true,
+      data: { questions: JSON.parse(JSON.stringify(questions)), isNext },
+    }
+  } catch (err) {
+    return handleError(err, 'server') as ErrorResponse
   }
 }

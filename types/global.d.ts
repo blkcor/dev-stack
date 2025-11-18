@@ -23,7 +23,7 @@ declare global {
     upvotes: number
     answers: number
     views: number
-    createdAt: Date
+    createdAt: string
   }
 
   type ActionResponse<T = any> = {
@@ -45,5 +45,13 @@ declare global {
   type RouteParam = {
     params: Promise<Record<string, string>>
     searchParams: Promise<Record<string, string>>
+  }
+
+  interface PaginatedQueryParams {
+    page?: number
+    pageSize?: number
+    query?: string
+    filter?: string
+    sort?: string
   }
 }
