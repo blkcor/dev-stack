@@ -1,5 +1,5 @@
 import Link from 'next/link'
-
+import { use } from 'react'
 
 import QuestionCard from '@/components/cards/QuestionCard'
 import DataRenderer from '@/components/DataRenderer'
@@ -17,10 +17,10 @@ interface SearchParamsProps {
    */
   searchParams: Promise<{ [key: string]: string }>
 }
-export default async function Home({ searchParams }: SearchParamsProps) {
-  const { page, pageSize, query, filter } = await searchParams
+export default function Home({ searchParams }: SearchParamsProps) {
+  const { page, pageSize, query, filter } = use(searchParams)
 
-  const { data, success, error } = await getQuestions({ page: Number(page) || 1, pageSize: Number(pageSize) || 10, query: query || '', filter: filter || '' })
+  const { data, success, error } = use(getQuestions({ page: Number(page) || 1, pageSize: Number(pageSize) || 10, query: query || '', filter: filter || '' }))
 
   const { questions } = data || {}
 
@@ -51,7 +51,7 @@ export default async function Home({ searchParams }: SearchParamsProps) {
       {/* HomeFilter */}
       <HomeFilter />
 
-      {/* Question Cards */}
+      {/* Question Data Renderer */}
       <DataRenderer
         data={questions}
         success={success}
@@ -64,7 +64,6 @@ export default async function Home({ searchParams }: SearchParamsProps) {
             ))}
           </div>
         }
-
         }
       />
     </>

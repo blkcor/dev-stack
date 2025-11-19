@@ -299,7 +299,7 @@ export const getQuestions = async (
   const filterQuery: FilterQuery<typeof Question> = {}
 
   // TODO: Implement the recommended query logic later
-  if (query === 'recommended') {
+  if (filter === 'recommended') {
     return { success: true, data: { questions: [], isNext: false } }
   }
 
