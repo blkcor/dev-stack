@@ -1,27 +1,37 @@
 import { Icon } from '@iconify/react'
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import React, { use } from 'react'
 
+import TagCard from '@/components/cards/TagCard'
 import MDXPreview from '@/components/editor/preview'
 import Metric from '@/components/Metric'
 import UserAvatar from '@/components/UserAvatar'
 import ROUTES from '@/constants/routes'
+import { ITagDoc } from '@/database/tag.model'
+import { getQuestion } from '@/lib/actions/question.action'
 import { getTimeStamp } from '@/lib/utils'
 
 
 const QuestionDetails = ({ params }: RouteParam) => {
   const { id } = use(params)
-  console.log(id)
-  // const { data, success } = use(getQuestion({ questionId: id }))
+
+  const { data, success } = use(getQuestion({ questionId: id }))
+
+  if (!data || !success) {
+    return redirect('/404')
+  }
+
+  const { _id, name, avatar } = data.author
+
   return (
     <>
       <div className='flex-start w-full flex-col'>
         <div className='flex w-full flex-col-reverse justify-between'>
           <div className='flex items-center justify-start gap-1'>
-            {/*  TODO: replace with the backend data */}
-            <UserAvatar id='1' name='blkcor' imageUrl={"https://avatar.iran.liara.run/public"} className='size-22' fallbackClassName="text-2.5" />
-            <Link href={ROUTES.PROFILE('1')}>
-              <p className='paragraph-semibold text-dark300_light700'>blkcor</p>
+            <UserAvatar id={_id.toString()} name={name} imageUrl={avatar} className='size-5.5' fallbackClassName="text-2.5" />
+            <Link href={ROUTES.PROFILE(_id.toString())}>
+              <p className='paragraph-semibold text-dark300_light700'>{name}</p>
             </Link>
           </div>
 
@@ -31,7 +41,7 @@ const QuestionDetails = ({ params }: RouteParam) => {
         </div>
 
         <h2 className='h2-semibold text-dark200_light800 mt-3.5 w-full'>
-          test title
+          {data.title}
         </h2>
       </div>
 
@@ -42,18 +52,26 @@ const QuestionDetails = ({ params }: RouteParam) => {
             className='text-dark300_light900 hover:text-primary-500 h-5 w-5 transition-colors duration-200'
           />
           <span className='text-dark400_light800 text-sm font-medium max-sm:hidden'>
-            asked {getTimeStamp(new Date())}
+            asked {getTimeStamp(new Date(data.createdAt))}
           </span>
         </div>
-        <Metric icon='mynaui:message' count={300021} type='Answers' />
-        <Metric icon='mdi-light:eye' count={1234} type='Views' />
+        <Metric icon='mynaui:message' count={data.answers} type='Answers' />
+        <Metric icon='mdi-light:eye' count={data.views} type='Views' />
       </div>
 
-      <MDXPreview content='### test' />
+      <MDXPreview content={data.content} />
 
-      {/* TODO: render the tags list */}
+
       <div className='mt-8 flex flex-wrap gap-2'>
-        <span className='text-dark400_light800 text-sm font-medium'>#tag</span>
+        <span className='text-dark400_light800 text-sm font-medium'>
+          <div className='mt-3.5 flex w-full flex-wrap gap-2'>
+            {
+              data.tags.map((tag: ITagDoc) => {
+                return <TagCard compact key={tag._id.toString()} _id={tag._id.toString()} name={tag.name} questions={tag.questions} />
+              })
+            }
+          </div>
+        </span>
       </div>
     </>
   )

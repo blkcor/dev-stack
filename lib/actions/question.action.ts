@@ -250,7 +250,7 @@ export const editQuestion = async (
 
 export const getQuestion = async (
   params: GetQuestionParams
-): Promise<ActionResponse<IQuestionDoc>> => {
+): Promise<ActionResponse<IQuestionAuthorPopulated & IQuestionTagPopulated>> => {
   const result = await action({
     params,
     schema: GetQuestionSchema,
@@ -263,7 +263,10 @@ export const getQuestion = async (
   const { questionId } = result.params!
 
   try {
-    const question = await Question.findById(questionId).populate('tags')
+    const question = await Question.findById(questionId)
+      .populate('tags')
+      .populate('author', '_id name avatar')
+
     if (!question) {
       throw new Error('The question is not exist')
     }
