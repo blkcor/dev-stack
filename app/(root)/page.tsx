@@ -2,10 +2,12 @@ import Link from 'next/link'
 
 
 import QuestionCard from '@/components/cards/QuestionCard'
+import DataRenderer from '@/components/DataRenderer'
 import HomeFilter from '@/components/filters/HomeFilter'
 import LocalSearch from '@/components/search/LocalSearch'
 import { Button } from '@/components/ui/button'
 import ROUTES from '@/constants/routes'
+import { EMPTY_QUESTION } from '@/constants/states'
 import { getQuestions } from '@/lib/actions/question.action'
 
 
@@ -50,22 +52,21 @@ export default async function Home({ searchParams }: SearchParamsProps) {
       <HomeFilter />
 
       {/* Question Cards */}
-      {
-        success ?
-          <div className='mt-10 flex w-full flex-col gap-6'>
-            {questions && questions.length > 0 ? questions.map(question => (
+      <DataRenderer
+        data={questions}
+        success={success}
+        error={error}
+        empty={EMPTY_QUESTION}
+        renderer={(questions) => {
+          return <div className='mt-10 flex w-full flex-col gap-6'>
+            {questions.map((question) => (
               <QuestionCard key={question._id.toString()} question={question} />
-            )) : (
-              <div className='mt-10 flex w-full items-center justify-center'>
-                <span className='text-dark400_light700'>No Question Found</span>
-              </div>
-            )}
-          </div> : (
-            <div className='mt-10 flex w-full items-center justify-center'>
-              <span className='text-dark400_light700'>{error?.message || 'Something went wrong'}</span>
-            </div>
-          )
-      }
+            ))}
+          </div>
+        }
+
+        }
+      />
     </>
   )
 }
