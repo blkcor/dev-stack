@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 // 标签缩写到完整名称的映射
-const TAG_NAME_MAP: Record<string, string> = {
+export const TAG_NAME_MAP: Record<string, string> = {
   js: 'javascript',
   ts: 'typescript',
   py: 'python',

@@ -5,7 +5,7 @@ import * as React from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import ROUTES from '@/constants/routes'
-import { cn, getDevIconClass, getTagInitial, getTechDescription, hasDevIcon } from '@/lib/utils'
+import { cn, getDevIconClass, getTagInitial, getTechDescription, hasDevIcon, TAG_NAME_MAP } from '@/lib/utils'
 
 type Props = {
   _id: string
@@ -87,7 +87,12 @@ const TagCard = ({
           <div className='background-light800_dark300 w-fit rounded-sm px-5 py-1.5'>
             <p className='paragraph-semibold text-dark300_light900'>{name}</p>
           </div>
-          <i className={cn(iconClass, 'text-2xl')} aria-hidden="true" />
+          {
+            TAG_NAME_MAP[name] ? <i className={cn(iconClass, 'text-2xl')} aria-hidden="true" /> : <span className='flex-center bg-primary-500/20 text-primary-500 size-4 rounded-full text-[10px] font-bold'>
+              {initial}
+            </span>
+          }
+
         </div>
         <p className='small-regular text-dark500_light700 mt-5 line-clamp-3 w-full'>
           {iconDescription}
