@@ -27,20 +27,24 @@ const Pages = ({ searchParams }: RouteParam) => {
         />
 
         {/* Tags Data Renderer */}
-        <DataRenderer
-          data={tags}
-          success={success}
-          error={error}
-          empty={EMPTY_TAG}
-          renderer={(tags) => {
-            return <div className='mt-10 flex w-full flex-wrap gap-4'>
-              {tags.map((tag) => {
-                return <TagCard key={tag._id.toString()} _id={tag._id.toString()} name={tag.name} questions={tag.questions} />
-              })}
-            </div>
-          }
-          }
-        />
+
+
+
+        <div className="mt-10">
+          <DataRenderer
+            data={tags}
+            success={success}
+            error={error}
+            empty={EMPTY_TAG}
+            renderer={(tags) => {
+              return <div className='grid w-full grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'>
+                {tags.map((tag) => {
+                  return <TagCard key={tag._id.toString()} _id={tag._id.toString()} name={tag.name} questions={tag.questions} />
+                })}
+              </div>
+            }}
+          />
+        </div>
       </section>
     </>
   )
