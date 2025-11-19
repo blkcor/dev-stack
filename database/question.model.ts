@@ -20,6 +20,18 @@ export interface IQuestionDoc extends IQuestion, Document {
   updatedAt: Date
 }
 
+export type PickedQuestion = {
+  _id: string
+  title: string
+  views: number
+  answer: number
+  upvotes: number
+  downvotes: number
+  author: Pick<IUserDoc, 'name' | 'avatar'> // or whatever your user type is
+  createdAt: Date
+  tags: Array<Pick<ITagDoc, 'name'>>
+}
+
 // Type for populated question - using proper Mongoose typing
 export type IQuestionTagPopulated = Omit<IQuestionDoc, 'tags'> & {
   tags: ITagDoc[]

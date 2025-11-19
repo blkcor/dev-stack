@@ -2,11 +2,14 @@
 
 import { FilterQuery } from 'mongoose'
 
+import Question, { PickedQuestion } from '@/database/question.model'
 import Tag, { ITagDoc } from '@/database/tag.model'
+import { TagQuestionsParams } from '@/types/action'
 
 import action from '../handlers/action'
 import { handleError } from '../handlers/error'
-import { PaginatedQueryParamsSchema } from '../validation'
+import { NotFoundError } from '../http-errors'
+import { PaginatedQueryParamsSchema, TagQuestionSchema } from '../validation'
 
 export const getTags = async (
   params: PaginatedQueryParams
@@ -65,6 +68,73 @@ export const getTags = async (
       success: true,
       data: {
         tags: JSON.parse(JSON.stringify(tags)),
+        isNext,
+      },
+    }
+  } catch (err) {
+    return handleError(err, 'server') as ErrorResponse
+  }
+}
+
+export const getTagQuestions = async (
+  params: TagQuestionsParams
+): Promise<
+  ActionResponse<{
+    tag: ITagDoc
+    questions: Array<PickedQuestion>
+    isNext: boolean
+  }>
+> => {
+  const validatedResult = await action({
+    params,
+    schema: TagQuestionSchema,
+    authorize: true,
+  })
+
+  if (validatedResult instanceof Error) {
+    return handleError(validatedResult, 'server') as ErrorResponse
+  }
+
+  const { page = 1, pageSize = 10, tagId, query } = validatedResult.params!
+
+  try {
+    const tag = await Tag.findById(tagId)
+
+    if (!tag) throw new NotFoundError('Tag not found')
+
+    const filterQuery: FilterQuery<typeof Question> = {
+      tags: { $in: [tagId] },
+    }
+
+    if (query) {
+      filterQuery.title = { $regex: query, $options: 'i' }
+    }
+
+    const totalQuestions = await Question.countDocuments(filterQuery)
+    const skip = (page - 1) * pageSize
+    const limit = pageSize
+
+    const questions = await Question.find(filterQuery)
+      .select('_id title views answer upvotes downvotes author createdAt')
+      .populate([
+        {
+          path: 'author',
+          select: 'name avatar',
+        },
+        {
+          path: 'tags',
+          select: 'name',
+        },
+      ])
+      .skip(skip)
+      .limit(limit)
+
+    const isNext = totalQuestions > skip + questions.length
+    return {
+      success: true,
+      data: {
+        tag: JSON.parse(JSON.stringify(tag)),
+        questions: JSON.parse(JSON.stringify(questions)),
         isNext,
       },
     }
