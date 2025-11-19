@@ -37,7 +37,7 @@ const QuestionCard = ({ question }: Props) => {
             ...tag,
             _id: tag._id.toString(),
           }
-          return <TagCard key={tag._id.toString()} {...tagIdString} />
+          return <TagCard compact key={tag._id.toString()} {...tagIdString} />
         })}
       </div>
 
