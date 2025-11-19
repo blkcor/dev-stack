@@ -1,9 +1,8 @@
-
-
 import { Icon } from '@iconify/react'
 import Link from 'next/link'
 import React, { use } from 'react'
 
+import MDXPreview from '@/components/editor/preview'
 import Metric from '@/components/Metric'
 import UserAvatar from '@/components/UserAvatar'
 import ROUTES from '@/constants/routes'
@@ -50,7 +49,7 @@ const QuestionDetails = ({ params }: RouteParam) => {
         <Metric icon='mdi-light:eye' count={1234} type='Views' />
       </div>
 
-      <p className='text-dark400_light800'>Preview Content</p>
+      <MDXPreview content='### test' />
 
       {/* TODO: render the tags list */}
       <div className='mt-8 flex flex-wrap gap-2'>
