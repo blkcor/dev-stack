@@ -11,13 +11,7 @@ import { EMPTY_QUESTION } from '@/constants/states'
 import { getQuestions } from '@/lib/actions/question.action'
 
 
-interface SearchParamsProps {
-  /**
-   * this is async because the component is rendered in the server
-   */
-  searchParams: Promise<{ [key: string]: string }>
-}
-export default function Home({ searchParams }: SearchParamsProps) {
+export default function Home({ searchParams }: RouteParam) {
   const { page, pageSize, query, filter } = use(searchParams)
 
   const { data, success, error } = use(getQuestions({ page: Number(page) || 1, pageSize: Number(pageSize) || 10, query: query || '', filter: filter || '' }))
@@ -41,7 +35,7 @@ export default function Home({ searchParams }: SearchParamsProps) {
       {/* Local Search */}
       <section className='mt-11'>
         <LocalSearch
-          route='/'
+          route={ROUTES.HOME}
           placeHolder='Search Questions...'
           otherClasses='flex-1'
           icon='material-symbols:search-sharp'

@@ -17,12 +17,14 @@ type Props = {
   placeHolder: string
   otherClasses?: string
   icon?: string
+  iconPosition?: 'left' | 'right'
 }
 const LocalSearch = ({
   route,
   otherClasses,
   placeHolder = 'Search...',
   icon = 'material-symbols:search',
+  iconPosition = 'left',
 }: Props) => {
   const pathname = usePathname()
   const router = useRouter()
@@ -59,20 +61,22 @@ const LocalSearch = ({
   return (
     <div
       className={cn(
-        'background-light800_dark300 flex min-h-[56px] grow items-center gap-4 rounded-[10px] px-4',
+        'background-light800_dark300 flex min-h-14 grow items-center gap-4 rounded-[10px] px-4',
         otherClasses
       )}
     >
-      <Icon icon={icon} className='h-6 w-6 cursor-pointer' />
+
+      {iconPosition === 'left' && <Icon icon={icon} className='h-6 w-6 cursor-pointer' />}
       <Input
         value={searchQuery}
         placeholder={placeHolder}
         onChange={e => {
           setSearchQuery(e.target.value)
         }}
-        className='paragraph-regular no-focus !background-light800_dark300 placeholder text-dark400_light700 border-none bg-transparent shadow-none outline-none'
+        className='paragraph-regular no-focus background-light800_dark300! placeholder text-dark400_light700 border-none bg-transparent shadow-none outline-none'
         type='text'
       />
+      {iconPosition === 'right' && <Icon icon={icon} className='h-6 w-6 cursor-pointer' />}
     </div>
   )
 }
