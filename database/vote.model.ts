@@ -12,6 +12,8 @@ export interface IVote {
 
 export interface IVoteDoc extends IVote, Document {
   _id: Types.ObjectId
+  createdAt: Date
+  updatedAt: Date
 }
 
 const VoteSchema = new Schema<IVote>(

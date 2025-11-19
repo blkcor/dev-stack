@@ -7,6 +7,8 @@ export interface ITag {
 
 export interface ITagDoc extends ITag, Document {
   _id: Types.ObjectId
+  createdAt: Date
+  updatedAt: Date
 }
 const TagSchema = new Schema<ITag>(
   {

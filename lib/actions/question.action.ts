@@ -2,14 +2,17 @@
 
 import mongoose, { FilterQuery } from 'mongoose'
 
-import Question, { IQuestionPopulated } from '@/database/question.model'
+import Question, {
+  IQuestionAuthorPopulated,
+  IQuestionDoc,
+  IQuestionTagPopulated,
+} from '@/database/question.model'
 import TagQuestion from '@/database/tag-question.model'
 import Tag from '@/database/tag.model'
 import { CreateQuestionParams, EditQuestionParams, GetQuestionParams } from '@/types/action'
 
 import action from '../handlers/action'
 import { handleError } from '../handlers/error'
-import { logger } from '../logger'
 import {
   AskQuestionSchema,
   EditQuestionSchema,
@@ -19,7 +22,7 @@ import {
 
 export const createQuestion = async (
   params: CreateQuestionParams
-): Promise<ActionResponse<Question>> => {
+): Promise<ActionResponse<IQuestionDoc>> => {
   const result = await action({
     params,
     schema: AskQuestionSchema,
@@ -111,7 +114,7 @@ export const createQuestion = async (
 
 export const editQuestion = async (
   params: EditQuestionParams
-): Promise<ActionResponse<Question>> => {
+): Promise<ActionResponse<IQuestionDoc>> => {
   const result = await action({
     params,
     schema: EditQuestionSchema,
@@ -133,7 +136,7 @@ export const editQuestion = async (
     // get the question by id with populated tags
     const question = (await Question.findById(questionId)
       .populate('tags')
-      .session(session)) as IQuestionPopulated | null
+      .session(session)) as IQuestionTagPopulated | null
 
     if (!question) {
       throw new Error('The question is not exist')
@@ -245,7 +248,9 @@ export const editQuestion = async (
   }
 }
 
-export const getQuestion = async (params: GetQuestionParams): Promise<ActionResponse<Question>> => {
+export const getQuestion = async (
+  params: GetQuestionParams
+): Promise<ActionResponse<IQuestionDoc>> => {
   const result = await action({
     params,
     schema: GetQuestionSchema,
@@ -275,7 +280,7 @@ export const getQuestions = async (
   params: PaginatedQueryParams
 ): Promise<
   ActionResponse<{
-    questions: Question[]
+    questions: Array<IQuestionAuthorPopulated & IQuestionTagPopulated>
     isNext: boolean
   }>
 > => {
@@ -332,7 +337,6 @@ export const getQuestions = async (
       .sort(sortCriteria)
       .skip(skip)
       .limit(limit)
-    logger.info(`questions, ${JSON.stringify(questions)}`)
     const isNext = questions.length + skip < totalQuestions
 
     return {

@@ -13,6 +13,8 @@ export interface IUser {
 
 export interface IUserDoc extends Omit<Document, 'location'>, IUser {
   _id: Types.ObjectId
+  createdAt: Date
+  updatedAt: Date
 }
 const UserSchema = new Schema<IUser>(
   {

@@ -11,6 +11,8 @@ export interface IAccount {
 
 export interface IAccountDoc extends IAccount, Document {
   _id: Types.ObjectId
+  createdAt: Date
+  updatedAt: Date
 }
 
 const AccountSchema = new Schema<IAccount>(

@@ -10,6 +10,8 @@ export interface IAnswer {
 
 export interface IAnswerDoc extends IAnswer, Document {
   _id: Types.ObjectId
+  createdAt: Date
+  updatedAt: Date
 }
 
 const AnswerSchema = new Schema<IAnswer>(

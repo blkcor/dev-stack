@@ -7,6 +7,8 @@ export interface ICollection {
 
 export interface ICollectionDoc extends ICollection, Document {
   _id: Types.ObjectId
+  createdAt: Date
+  updatedAt: Date
 }
 
 const CollectionSchema = new Schema<ICollection>(

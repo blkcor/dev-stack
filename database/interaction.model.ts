@@ -11,6 +11,8 @@ export interface IInteraction {
 
 export interface IInteractionDoc extends IInteraction, Document {
   _id: Types.ObjectId
+  createdAt: Date
+  updatedAt: Date
 }
 
 const InteractionSchema = new Schema<IInteraction>(

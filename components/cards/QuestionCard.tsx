@@ -6,12 +6,13 @@ import * as React from 'react'
 import TagCard from '@/components/cards/TagCard'
 import Matric from '@/components/Matric'
 import ROUTES from '@/constants/routes'
+import { IQuestionAuthorPopulated, IQuestionTagPopulated } from '@/database/question.model'
 import { getTimeStamp } from '@/lib/utils'
 
 import UserAvatar from '../UserAvatar'
 
 type Props = {
-  question: Question
+  question: IQuestionTagPopulated & IQuestionAuthorPopulated
 }
 const QuestionCard = ({ question }: Props) => {
   return (
@@ -22,7 +23,7 @@ const QuestionCard = ({ question }: Props) => {
             {getTimeStamp(new Date(question.createdAt))}
           </span>
 
-          <Link href={ROUTES.QUESTION(question._id)}>
+          <Link href={ROUTES.QUESTION(question._id.toString())}>
             <h3 className='text-dark200_light900 hover:text-primary-500 line-clamp-1 flex-1 text-lg font-semibold transition-colors duration-200 sm:text-xl'>
               {question.title}
             </h3>
@@ -32,15 +33,19 @@ const QuestionCard = ({ question }: Props) => {
 
       <div className='mt-3.5 flex w-full flex-wrap gap-2'>
         {question.tags.map(tag => {
-          return <TagCard key={tag._id} {...tag} />
+          const tagIdString = {
+            ...tag,
+            _id: tag._id.toString(),
+          }
+          return <TagCard key={tag._id.toString()} {...tagIdString} />
         })}
       </div>
 
       <div className='flex-between mt-6 flex w-full flex-wrap gap-3'>
         {/* Author */}
         <div className='flex items-center gap-2'>
-          <UserAvatar id={question.author._id} name={question.author.name} imageUrl={question.author.avatar} className='size-7.5!' />
-          <Link href={ROUTES.PROFILE(question.author._id)}>
+          <UserAvatar id={question.author._id.toString()} name={question.author.name} imageUrl={question.author.avatar} className='size-7.5!' />
+          <Link href={ROUTES.PROFILE(question.author._id.toString())}>
             <span className='text-dark400_light700 hover:text-primary-500 text-sm font-medium transition-colors duration-200'>
               {question.author.name}
             </span>

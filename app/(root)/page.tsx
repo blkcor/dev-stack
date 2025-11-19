@@ -8,23 +8,6 @@ import { Button } from '@/components/ui/button'
 import ROUTES from '@/constants/routes'
 import { getQuestions } from '@/lib/actions/question.action'
 
-/**
- * questions [
-  {
-    _id: '691354f1ad371e7bf5aa5614',
-    title: 'How to learn frontend?',
-    content: 'How to learn frontend, can any one could give some learning path for frontend?',
-    tags: [ [Object], [Object] ],
-    views: 0,
-    upvotes: 0,
-    downvotes: 0,
-    answers: 0,
-    author: { _id: '6910942c8a6b9556b192313c', name: 'blkcor' },
-    createdAt: '2025-11-11T15:23:29.254Z',
-    updatedAt: '2025-11-11T15:56:55.101Z',
-    __v: 3
-  },
- */
 
 interface SearchParamsProps {
   /**
@@ -35,7 +18,7 @@ interface SearchParamsProps {
 export default async function Home({ searchParams }: SearchParamsProps) {
   const { page, pageSize, query, filter } = await searchParams
 
-  const { data } = await getQuestions({ page: Number(page) || 1, pageSize: Number(pageSize) || 10, query: query || '', filter: filter || '' })
+  const { data, success, error } = await getQuestions({ page: Number(page) || 1, pageSize: Number(pageSize) || 10, query: query || '', filter: filter || '' })
 
   const { questions } = data || {}
 
@@ -67,13 +50,22 @@ export default async function Home({ searchParams }: SearchParamsProps) {
       <HomeFilter />
 
       {/* Question Cards */}
-      <div className='mt-10 flex w-full flex-col gap-6'>
-        {questions && questions.length > 0 ? questions.map(question => (
-          <QuestionCard key={question._id} question={question} />
-        )) : (
-          <div>No questions found.</div>
-        )}
-      </div>
+      {
+        success ?
+          <div className='mt-10 flex w-full flex-col gap-6'>
+            {questions && questions.length > 0 ? questions.map(question => (
+              <QuestionCard key={question._id.toString()} question={question} />
+            )) : (
+              <div className='mt-10 flex w-full items-center justify-center'>
+                <span className='text-dark400_light700'>No Question Found</span>
+              </div>
+            )}
+          </div> : (
+            <div className='mt-10 flex w-full items-center justify-center'>
+              <span className='text-dark400_light700'>{error?.message || 'Something went wrong'}</span>
+            </div>
+          )
+      }
     </>
   )
 }

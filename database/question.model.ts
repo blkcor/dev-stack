@@ -1,6 +1,7 @@
 import { model, models, Schema, Types, Model, Document } from 'mongoose'
 
 import type { ITagDoc } from './tag.model'
+import { IUserDoc } from './user.model'
 
 export interface IQuestion {
   title: string
@@ -15,11 +16,17 @@ export interface IQuestion {
 
 export interface IQuestionDoc extends IQuestion, Document {
   _id: Types.ObjectId
+  createdAt: Date
+  updatedAt: Date
 }
 
 // Type for populated question - using proper Mongoose typing
-export type IQuestionPopulated = Omit<IQuestionDoc, 'tags'> & {
+export type IQuestionTagPopulated = Omit<IQuestionDoc, 'tags'> & {
   tags: ITagDoc[]
+}
+
+export type IQuestionAuthorPopulated = Omit<IQuestionDoc, 'author'> & {
+  author: IUserDoc
 }
 
 const QuestionSchema = new Schema<IQuestion>(
