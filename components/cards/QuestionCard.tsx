@@ -4,12 +4,13 @@ import Link from 'next/link'
 import * as React from 'react'
 
 import TagCard from '@/components/cards/TagCard'
-import Matric from '@/components/Matric'
+import Metric from '@/components/Metric'
 import ROUTES from '@/constants/routes'
 import { IQuestionAuthorPopulated, IQuestionTagPopulated } from '@/database/question.model'
 import { getTimeStamp } from '@/lib/utils'
 
 import UserAvatar from '../UserAvatar'
+
 
 type Props = {
   question: IQuestionTagPopulated & IQuestionAuthorPopulated
@@ -54,11 +55,11 @@ const QuestionCard = ({ question }: Props) => {
             • asked {getTimeStamp(new Date(question.createdAt))}
           </span>
         </div>
-        {/*  Matrices */}
+        {/*  Metrices */}
         <div className='flex items-center gap-3 max-sm:flex-wrap max-sm:justify-start'>
-          <Matric icon='iconamoon:like-light' count={question.upvotes} type='Votes' />
-          <Matric icon='mynaui:message' count={question.answers} type='Answers' />
-          <Matric icon='mdi-light:eye' count={question.views} type='Views' />
+          <Metric icon='iconamoon:like-light' count={question.upvotes} type='Votes' />
+          <Metric icon='mynaui:message' count={question.answers} type='Answers' />
+          <Metric icon='mdi-light:eye' count={question.views} type='Views' />
         </div>
       </div>
     </div>

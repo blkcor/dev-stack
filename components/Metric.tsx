@@ -8,7 +8,7 @@ type Props = {
   count: number
   type: string
 }
-const Matric = ({ icon, count, type }: Props) => {
+const Metric = ({ icon, count, type }: Props) => {
   return (
     <div className='flex cursor-pointer items-center gap-1.5 transition-all duration-200'>
       <Icon
@@ -22,4 +22,4 @@ const Matric = ({ icon, count, type }: Props) => {
   )
 }
 
-export default Matric
+export default Metric
