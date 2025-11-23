@@ -1,7 +1,9 @@
 'use server'
 
 import mongoose, { FilterQuery } from 'mongoose'
+import { revalidatePath } from 'next/cache'
 
+import ROUTES from '@/constants/routes'
 import Question, {
   IQuestionAuthorPopulated,
   IQuestionDoc,
@@ -9,7 +11,12 @@ import Question, {
 } from '@/database/question.model'
 import TagQuestion from '@/database/tag-question.model'
 import Tag from '@/database/tag.model'
-import { CreateQuestionParams, EditQuestionParams, GetQuestionParams } from '@/types/action'
+import {
+  CreateQuestionParams,
+  EditQuestionParams,
+  GetQuestionParams,
+  IncrementViewsParams,
+} from '@/types/action'
 
 import action from '../handlers/action'
 import { handleError } from '../handlers/error'
@@ -17,6 +24,7 @@ import {
   AskQuestionSchema,
   EditQuestionSchema,
   GetQuestionSchema,
+  IncrementViewsSchema,
   PaginatedQueryParamsSchema,
 } from '../validation'
 
@@ -345,6 +353,34 @@ export const getQuestions = async (
     return {
       success: true,
       data: { questions: JSON.parse(JSON.stringify(questions)), isNext },
+    }
+  } catch (err) {
+    return handleError(err, 'server') as ErrorResponse
+  }
+}
+
+export const incrementViews = async (params: IncrementViewsParams): Promise<ActionResponse> => {
+  const validatedResult = await action({ params, schema: IncrementViewsSchema })
+  if (validatedResult instanceof Error) {
+    return handleError(validatedResult, 'server') as ErrorResponse
+  }
+
+  const { questionId } = validatedResult.params!
+
+  try {
+    const question = await Question.findById(questionId)
+    if (!question) {
+      throw new Error('Question not found')
+    }
+
+    question.views += 1
+    await question.save()
+
+    // revalidate the path
+    revalidatePath(ROUTES.QUESTION(questionId))
+    return {
+      success: true,
+      data: { views: question.views },
     }
   } catch (err) {
     return handleError(err, 'server') as ErrorResponse

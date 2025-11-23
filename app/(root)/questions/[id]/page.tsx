@@ -12,6 +12,8 @@ import { ITagDoc } from '@/database/tag.model'
 import { getQuestion } from '@/lib/actions/question.action'
 import { getTimeStamp } from '@/lib/utils'
 
+import View from '../view'
+
 
 const QuestionDetails = ({ params }: RouteParam) => {
   const { id } = use(params)
@@ -26,6 +28,7 @@ const QuestionDetails = ({ params }: RouteParam) => {
 
   return (
     <>
+      <View questionId={id} />
       <div className='flex-start w-full flex-col'>
         <div className='flex w-full flex-col-reverse justify-between'>
           <div className='flex items-center justify-start gap-1'>

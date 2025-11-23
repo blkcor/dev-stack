@@ -246,3 +246,9 @@ export const TagQuestionSchema = PaginatedQueryParamsSchema.extend({
     error: 'Tag ID is required.',
   }),
 })
+
+export const IncrementViewsSchema = z.object({
+  questionId: z.string().min(1, {
+    error: 'Question ID is required.',
+  }),
+})
