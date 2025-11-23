@@ -1,9 +1,7 @@
 'use server'
 
 import mongoose, { FilterQuery } from 'mongoose'
-import { revalidatePath } from 'next/cache'
 
-import ROUTES from '@/constants/routes'
 import Question, {
   IQuestionAuthorPopulated,
   IQuestionDoc,
@@ -376,8 +374,6 @@ export const incrementViews = async (params: IncrementViewsParams): Promise<Acti
     question.views += 1
     await question.save()
 
-    // revalidate the path
-    revalidatePath(ROUTES.QUESTION(questionId))
     return {
       success: true,
       data: { views: question.views },

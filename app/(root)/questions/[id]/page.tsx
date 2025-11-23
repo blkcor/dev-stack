@@ -1,7 +1,8 @@
 import { Icon } from '@iconify/react'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import React, { use } from 'react'
+import React from 'react'
+
 
 import TagCard from '@/components/cards/TagCard'
 import MDXPreview from '@/components/editor/preview'
@@ -9,26 +10,28 @@ import Metric from '@/components/Metric'
 import UserAvatar from '@/components/UserAvatar'
 import ROUTES from '@/constants/routes'
 import { ITagDoc } from '@/database/tag.model'
-import { getQuestion } from '@/lib/actions/question.action'
+import { getQuestion, incrementViews } from '@/lib/actions/question.action'
 import { getTimeStamp } from '@/lib/utils'
 
-import View from '../view'
 
 
-const QuestionDetails = ({ params }: RouteParam) => {
-  const { id } = use(params)
+const QuestionDetails = async ({ params }: RouteParam) => {
+  const { id } = await params
 
-  const { data, success } = use(getQuestion({ questionId: id }))
+  const [, { data, success }] = await Promise.all([
+    await incrementViews({ questionId: id }),
+    await getQuestion({ questionId: id })
+  ])
 
   if (!data || !success) {
     return redirect('/404')
   }
 
+
   const { _id, name, avatar } = data.author
 
   return (
     <>
-      <View questionId={id} />
       <div className='flex-start w-full flex-col'>
         <div className='flex w-full flex-col-reverse justify-between'>
           <div className='flex items-center justify-start gap-1'>
