@@ -1,8 +1,8 @@
 import { Icon } from '@iconify/react'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
+import { after } from 'next/server'
 import React from 'react'
-
 
 import TagCard from '@/components/cards/TagCard'
 import MDXPreview from '@/components/editor/preview'
@@ -18,10 +18,12 @@ import { getTimeStamp } from '@/lib/utils'
 const QuestionDetails = async ({ params }: RouteParam) => {
   const { id } = await params
 
-  const [, { data, success }] = await Promise.all([
-    await incrementViews({ questionId: id }),
-    await getQuestion({ questionId: id })
-  ])
+  after(async () => {
+    await incrementViews({ questionId: id })
+  })
+
+  const { data, success } = await getQuestion({ questionId: id })
+
 
   if (!data || !success) {
     return redirect('/404')
