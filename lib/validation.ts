@@ -252,3 +252,9 @@ export const IncrementViewsSchema = z.object({
     error: 'Question ID is required.',
   }),
 })
+
+export const AnswerSchema = z.object({
+  content: z.string().min(50, {
+    error: 'The answer must be at least 50 characters long.',
+  }),
+})

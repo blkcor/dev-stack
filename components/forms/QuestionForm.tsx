@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import ROUTES from '@/constants/routes'
+import { IQuestionTagPopulated } from '@/database/question.model'
 import { createQuestion, editQuestion } from '@/lib/actions/question.action'
 import { AskQuestionSchema } from '@/lib/validation'
 const Editor = dynamic(() => import('@/components/editor'), {
@@ -33,7 +34,7 @@ const Editor = dynamic(() => import('@/components/editor'), {
 
 interface QuestionFormProps {
   isEdit?: boolean
-  question?: Question
+  question?: IQuestionTagPopulated
 }
 
 const QuestionForm = ({ isEdit, question }: QuestionFormProps) => {
@@ -54,7 +55,7 @@ const QuestionForm = ({ isEdit, question }: QuestionFormProps) => {
 
     startTransition(async () => {
       if (isEdit && question) {
-        const result = await editQuestion({ questionId: question._id, ...data })
+        const result = await editQuestion({ questionId: question._id.toString(), ...data })
         if (result.success) {
           toast.success("Success", {
             description: 'Your question has been updated successfully'

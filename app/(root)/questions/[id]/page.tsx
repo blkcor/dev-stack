@@ -6,6 +6,7 @@ import React from 'react'
 
 import TagCard from '@/components/cards/TagCard'
 import MDXPreview from '@/components/editor/preview'
+import AnswerForm from '@/components/forms/AnswerForm'
 import Metric from '@/components/Metric'
 import UserAvatar from '@/components/UserAvatar'
 import ROUTES from '@/constants/routes'
@@ -81,6 +82,10 @@ const QuestionDetails = async ({ params }: RouteParam) => {
           </div>
         </span>
       </div>
+
+      <section className='mt-8'>
+        <AnswerForm />
+      </section>
     </>
   )
 }
