@@ -5,9 +5,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Icon } from '@iconify/react'
 import { type MDXEditorMethods } from '@mdxeditor/editor'
 import dynamic from 'next/dynamic'
-import { useRef, useState } from 'react'
+import { useRef, useState, useTransition } from 'react'
 import type { SubmitHandler, } from 'react-hook-form'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 
 import {
@@ -17,6 +18,7 @@ import {
   FormItem,
   FormMessage,
 } from '@/components/ui/form'
+import { createAnswer } from '@/lib/actions/answer.action'
 import { AnswerSchema } from '@/lib/validation'
 
 import { Button } from '../ui/button'
@@ -27,8 +29,10 @@ const Editor = dynamic(() => import('@/components/editor'), {
 
 
 
-const AnswerForm = () => {
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+const AnswerForm = ({ questionId }: {
+  questionId: string
+}) => {
+  const [isSubmitting, startAnswerTransition] = useTransition()
   const [isAISubmitting, setIsAISubmitting] = useState<boolean>(false)
   const editorRef = useRef<MDXEditorMethods>(null)
 
@@ -40,7 +44,25 @@ const AnswerForm = () => {
   })
 
   const handleSubmit: SubmitHandler<z.infer<typeof AnswerSchema>> = async (data) => {
-    console.log(data)
+    startAnswerTransition(async () => {
+      const result = await createAnswer({
+        questionId,
+        content: data.content
+      })
+      if (result.success) {
+        form.reset()
+        if(editorRef.current){
+          editorRef.current.setMarkdown('')
+        }
+        toast.success('Success', {
+          description: 'Your answer has been posted successfully'
+        })
+      } else {
+        toast.error('Error', {
+          description: result.error?.message || 'Something went wrong while posting your answer'
+        })
+      }
+    })
   }
 
   return (

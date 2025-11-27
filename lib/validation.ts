@@ -258,3 +258,12 @@ export const AnswerSchema = z.object({
     error: 'The answer must be at least 50 characters long.',
   }),
 })
+
+export const CreateAnswerSchema = z.object({
+  questionId: z.string().min(1, {
+    error: 'Question ID is required.',
+  }),
+  content: z.string().min(50, {
+    error: 'The answer must be at least 50 characters long.',
+  }),
+})

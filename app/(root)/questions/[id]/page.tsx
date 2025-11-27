@@ -84,7 +84,7 @@ const QuestionDetails = async ({ params }: RouteParam) => {
       </div>
 
       <section className='mt-8'>
-        <AnswerForm />
+        <AnswerForm questionId={id} />
       </section>
     </>
   )

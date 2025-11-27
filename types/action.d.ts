@@ -39,3 +39,8 @@ export interface TagQuestionsParams extends Omit<PaginatedQueryParams, 'filter'>
 export interface IncrementViewsParams {
   questionId: string
 }
+
+export interface CreateAnswerParams {
+  questionId: string
+  content: string
+}
