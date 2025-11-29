@@ -19,7 +19,7 @@ export const DEFAULT_ERROR = {
 }
 
 export const EMPTY_QUESTION = {
-  title: 'Ahh! No questions found',
+  title: 'Ahh! No answers found',
   message: 'The question board is empty. Maybe it is waiting for you to ask a question!',
   button: {
     text: 'Ask a question',
@@ -34,6 +34,11 @@ export const EMPTY_TAG = {
     text: 'Create tag',
     href: ROUTES.TAGS,
   },
+}
+
+export const EMPTY_ANSWERS = {
+  title: 'Ahh! No answers found',
+  message: 'The answer board is empty. Make it rain with your brilliant answers!',
 }
 
 export const EMPTY_COLLECTION = {

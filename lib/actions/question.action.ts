@@ -71,7 +71,7 @@ export const createQuestion = async (
       // Find or create a tag with case-insensitive matching
       // - Uses regex with 'i' flag to match tag name case-insensitively
       // - $setOnInsert: Only sets the 'name' field when creating a new tag (on insert)
-      // - $inc: Increments the 'questions' counter by 1 for both existing and new tags
+      // - $inc: Increments the 'answers' counter by 1 for both existing and new tags
       // - upsert: true - Creates a new tag if no match is found
       // - new: true - Returns the modified/created document instead of the original
       // - session: Ensures this operation is part of the transaction

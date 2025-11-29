@@ -240,7 +240,7 @@ export const PaginatedQueryParamsSchema = z.object({
   sort: z.string().optional(),
 })
 
-// we need to query all associated questions with tagId
+// we need to query all associated answers with tagId
 export const TagQuestionSchema = PaginatedQueryParamsSchema.extend({
   tagId: z.string().min(1, {
     error: 'Tag ID is required.',

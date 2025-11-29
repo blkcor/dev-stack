@@ -12,15 +12,16 @@ export interface IAnswer {
 
 export interface IAnswerDoc extends IAnswer, Document {
   _id: Types.ObjectId
-  createdAt: Date
-  updatedAt: Date
+  createdAt: string
+  updatedAt: string
 }
 
 export type IAnswerAuthorPopulated = {
   _id: string
   author: Pick<IUserDoc, '_id' | 'name' | 'avatar'>
-  createdAt: Date
-  updatedAt: Date
+  content: string
+  createdAt: string
+  updatedAt: string
 }
 
 const AnswerSchema = new Schema<IAnswer>(

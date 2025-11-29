@@ -19,7 +19,7 @@ export default function Home({ searchParams }: RouteParam) {
   const { questions } = data || {}
 
 
-  // const filteredQuestions = questions?.filter(question =>
+  // const filteredQuestions = answers?.filter(question =>
   //   question.title.toLowerCase().includes(query?.toLowerCase() || '')
   // )
   return (
