@@ -1,5 +1,7 @@
 import { model, models, Schema, Types, Model } from 'mongoose'
 
+import { IUserDoc } from './user.model'
+
 export interface IAnswer {
   author: Types.ObjectId
   question: Types.ObjectId
@@ -10,6 +12,13 @@ export interface IAnswer {
 
 export interface IAnswerDoc extends IAnswer, Document {
   _id: Types.ObjectId
+  createdAt: Date
+  updatedAt: Date
+}
+
+export type IAnswerAuthorPopulated = {
+  _id: string
+  author: Pick<IUserDoc, '_id' | 'name' | 'avatar'>
   createdAt: Date
   updatedAt: Date
 }

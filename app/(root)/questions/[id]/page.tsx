@@ -11,6 +11,7 @@ import Metric from '@/components/Metric'
 import UserAvatar from '@/components/UserAvatar'
 import ROUTES from '@/constants/routes'
 import { ITagDoc } from '@/database/tag.model'
+import { getAnswers } from '@/lib/actions/answer.action'
 import { getQuestion, incrementViews } from '@/lib/actions/question.action'
 import { getTimeStamp } from '@/lib/utils'
 
@@ -29,6 +30,18 @@ const QuestionDetails = async ({ params }: RouteParam) => {
   if (!data || !success) {
     return redirect('/404')
   }
+
+  const { success: isAnswerLoaded, data: answersResult, error: answersError } = await getAnswers({
+    questionId: id,
+    pageSize: 10,
+    page: 1,
+    sort: "latest"
+  })
+
+  console.log('SUCCESS', isAnswerLoaded)
+  console.log('ERROR', answersError)
+  console.log('ANSWERS', answersResult)
+
 
 
   const { _id, name, avatar } = data.author

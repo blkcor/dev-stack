@@ -267,3 +267,9 @@ export const CreateAnswerSchema = z.object({
     error: 'The answer must be at least 50 characters long.',
   }),
 })
+
+export const GetAnswersSchema = PaginatedQueryParamsSchema.extend({
+  questionId: z.string().min(1, {
+    error: 'Question ID is required.',
+  }),
+})

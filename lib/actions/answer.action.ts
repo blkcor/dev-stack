@@ -4,13 +4,13 @@ import mongoose from 'mongoose'
 import { revalidatePath } from 'next/cache'
 
 import ROUTES from '@/constants/routes'
-import Answer, { IAnswerDoc } from '@/database/answer.model'
+import Answer, { IAnswerAuthorPopulated, IAnswerDoc } from '@/database/answer.model'
 import Question from '@/database/question.model'
-import { CreateAnswerParams } from '@/types/action'
+import { CreateAnswerParams, GetAnswersParams } from '@/types/action'
 
 import action from '../handlers/action'
 import { handleError } from '../handlers/error'
-import { CreateAnswerSchema } from '../validation'
+import { CreateAnswerSchema, GetAnswersSchema } from '../validation'
 
 export const createAnswer = async (
   params: CreateAnswerParams
@@ -66,6 +66,69 @@ export const createAnswer = async (
     }
   } catch (err) {
     await session.abortTransaction()
+    return handleError(err, 'server') as ErrorResponse
+  }
+}
+
+export const getAnswers = async (
+  params: GetAnswersParams
+): Promise<
+  ActionResponse<{
+    answers: IAnswerAuthorPopulated[]
+    isNext: boolean
+    totalAnswers: number
+  }>
+> => {
+  const validatedResult = await action({ params, schema: GetAnswersSchema })
+  if (validatedResult instanceof Error) {
+    return handleError(validatedResult, 'server') as ErrorResponse
+  }
+
+  const { page = 1, pageSize = 10, questionId, filter } = validatedResult.params!
+  const skip = (page - 1) * pageSize
+  const limit = pageSize
+
+  let sortCriteria = {}
+
+  switch (filter) {
+    case 'latest':
+      sortCriteria = { createdAt: -1 }
+      break
+    case 'oldest':
+      sortCriteria = { createdAt: 1 }
+      break
+    case 'popular':
+      sortCriteria = { upvotes: -1 }
+      break
+    default:
+      sortCriteria = { createdAt: -1 }
+      break
+  }
+
+  try {
+    // find the answer count
+    const totalAnswers = await Answer.countDocuments({
+      question: questionId,
+    })
+
+    const answers = await Answer.find({
+      question: questionId,
+    })
+      .populate('author', '_id name avatar')
+      .sort(sortCriteria)
+      .skip(skip)
+      .limit(limit)
+
+    const isNext = answers.length + skip < totalAnswers
+    return {
+      success: true,
+      data: {
+        answers: JSON.parse(JSON.stringify(answers)),
+        isNext,
+        totalAnswers,
+      },
+    }
+  } catch (err) {
     return handleError(err, 'server') as ErrorResponse
   }
 }
