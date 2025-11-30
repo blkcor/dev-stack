@@ -13,7 +13,7 @@ interface AnswerCardProps {
 
 const AnswerCard = ({ answer }: AnswerCardProps) => {
   return (
-    <article className='light-border border-b py-10'>
+    <article className='card-wrapper rounded-[10px] px-5 py-8 sm:px-9 sm:py-9 mb-6'>
       <span id={answer._id} className='hash-span' />
 
       <div className='mb-5 flex flex-col-reverse justify-between gap-5 sm:flex-row sm:items-center sm:gap-2'>
