@@ -283,5 +283,7 @@ export const AIAnswerSchema = z.object({
     .max(1000, {
       error: 'Question cannot exceed 1000 characters.',
     }),
-  content: z.string(),
+  content: z.string().min(10, {
+    error: 'Question content must be at least 10 characters long.',
+  }),
 })

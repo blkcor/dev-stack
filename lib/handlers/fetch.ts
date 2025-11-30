@@ -18,7 +18,7 @@ export const fetchHandler = async <T>(
   url: string,
   options: FetchOptions = {}
 ): Promise<ActionResponse<T>> => {
-  const { timeout = 5000, headers: customHeaders = {}, ...restOptions } = options
+  const { timeout = 100000, headers: customHeaders = {}, ...restOptions } = options
   // abortController for control the request action
   const abortController = new AbortController()
   // when the timeout, we need to cancel the request progress
@@ -40,8 +40,14 @@ export const fetchHandler = async <T>(
   // go to make a fetch
   try {
     const response = await fetch(url, config)
+    let errorMessage = `HTTP error: ${response.statusText}`
     if (!response.ok) {
-      throw new RequestError(response.status, `HTTP error: ${response.statusText}`)
+      const errorData = (await response.json()) as ErrorResponse
+
+      if (errorData && errorData.error && errorData.error.message) {
+        errorMessage = errorData.error.message
+      }
+      throw new RequestError(response.status, errorMessage)
     }
 
     return (await response.json()) as ActionResponse<T>

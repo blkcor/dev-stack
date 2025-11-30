@@ -1,10 +1,10 @@
 'use client'
 
-
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Icon } from '@iconify/react'
 import { type MDXEditorMethods } from '@mdxeditor/editor'
 import dynamic from 'next/dynamic'
+import { useSession } from 'next-auth/react'
 import { useRef, useState, useTransition } from 'react'
 import type { SubmitHandler, } from 'react-hook-form'
 import { useForm } from 'react-hook-form'
@@ -19,6 +19,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { createAnswer } from '@/lib/actions/answer.action'
+import { api } from '@/lib/api'
 import { AnswerSchema } from '@/lib/validation'
 
 import { Button } from '../ui/button'
@@ -27,14 +28,15 @@ const Editor = dynamic(() => import('@/components/editor'), {
   ssr: false,
 })
 
-
-
-const AnswerForm = ({ questionId }: {
+const AnswerForm = ({ questionId, questionTitle, questionContent }: {
   questionId: string
+  questionTitle: string
+  questionContent: string
 }) => {
   const [isSubmitting, startAnswerTransition] = useTransition()
   const [isAISubmitting, setIsAISubmitting] = useState<boolean>(false)
   const editorRef = useRef<MDXEditorMethods>(null)
+  const session = useSession()
 
   const form = useForm<z.infer<typeof AnswerSchema>>({
     resolver: zodResolver(AnswerSchema),
@@ -51,7 +53,7 @@ const AnswerForm = ({ questionId }: {
       })
       if (result.success) {
         form.reset()
-        if(editorRef.current){
+        if (editorRef.current) {
           editorRef.current.setMarkdown('')
         }
         toast.success('Success', {
@@ -65,11 +67,52 @@ const AnswerForm = ({ questionId }: {
     })
   }
 
+  const handleGenerateAIAnswer = async () => {
+    if (session.status !== 'authenticated') {
+      return toast.error('Error', {
+        description: 'Please log in first to use AI Answer Generation'
+      })
+    }
+
+    setIsAISubmitting(true)
+
+    try {
+      const { success, error, data } = await api.ai.getAnswers(questionTitle, questionContent)
+      console.log('API Response:', { success, error, data })
+      if (!success) {
+        return toast.error('Error', {
+          description: error?.message || "Something went wrong while generating AI answer"
+        })
+      }
+
+      if (data) {
+        const formattedData = data.replace(/<br>/g, ' ').trim()
+        editorRef.current?.setMarkdown(formattedData)
+        form.setValue('content', data)
+        // trigger the form content field validation
+        form.trigger('content')
+      }
+
+      toast.success('Success', {
+        description: 'AI answer generated successfully'
+      })
+
+    } catch (error) {
+      toast.error('Error', {
+        description: error instanceof Error ? error.message : "Something went wrong while generating AI answer"
+      })
+    } finally {
+      setIsAISubmitting(false)
+    }
+  }
+
+
+
   return (
     <div>
       <div className='flex flex-col justify-between gap-5 sm:flex-row sm:gap-2 sm:items-center'>
         <h4 className='paragraph-semibold text-dark400_light800'>Write your answer here</h4>
-        <Button className='btn! light-border-2 gap-1.5 rounded-md border px-4 py-2.5 text-primary-500 shadow-none transition-all duration-300 hover:scale-105 dark:text-primary-500' disabled={isAISubmitting}>
+        <Button className='btn! light-border-2 gap-1.5 rounded-md border px-4 py-2.5 text-primary-500 shadow-none transition-all duration-300 hover:scale-105 dark:text-primary-500' disabled={isAISubmitting} onClick={handleGenerateAIAnswer}>
           {
             isAISubmitting ? <div className='flex items-center gap-2 p-2'>
               <Icon className='size-4 animate-spin' icon='tdesign:load' />
