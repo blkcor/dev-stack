@@ -1,0 +1,32 @@
+import { deepseek } from '@ai-sdk/deepseek'
+import { generateText } from 'ai'
+import { NextResponse } from 'next/dist/server/web/spec-extension/response'
+import { NextRequest } from 'next/server'
+import z from 'zod'
+
+import { handleError } from '@/lib/handlers/error'
+import { ValidationError } from '@/lib/http-errors'
+import { AIAnswerSchema } from '@/lib/validation'
+
+export const POST = async (req: NextRequest) => {
+  const body = await req.json()
+  try {
+    const validatedResult = AIAnswerSchema.safeParse(body)
+    if (!validatedResult.success) {
+      throw new ValidationError(z.flattenError(validatedResult.error).fieldErrors)
+    }
+
+    const { question, content } = validatedResult.data
+
+    const { text } = await generateText({
+      model: deepseek('deepseek-chat'),
+      system:
+        "You are a helpful assistant that provides informative responses in markdown format. Use appropriate markdown syntax for headings, lists, code blocks, and emphasis where necessary. For code blocks, use short-form smaller case language identifiers (e.g., 'js' for JavaScript, 'py' for Python, 'ts' for TypeScript, 'html' for HTML, 'css' for CSS, etc.).",
+      prompt: `Generate a markdown-formatted response to the following question: ${question}. Based it on the provided content: ${content}. If the content is empty, please provide a helpful response as detailed as possible.`,
+    })
+
+    return NextResponse.json({ success: true, data: text }, { status: 200 })
+  } catch (err) {
+    return handleError(err, 'api') as APIErrorResponse
+  }
+}

@@ -48,3 +48,8 @@ export interface CreateAnswerParams {
 export interface GetAnswersParams extends PaginatedQueryParams {
   questionId: string
 }
+
+export interface AIAnswerParams {
+  question: string
+  content: string
+}

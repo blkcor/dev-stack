@@ -273,3 +273,15 @@ export const GetAnswersSchema = PaginatedQueryParamsSchema.extend({
     error: 'Question ID is required.',
   }),
 })
+
+export const AIAnswerSchema = z.object({
+  question: z
+    .string()
+    .min(5, {
+      error: 'Question is required.',
+    })
+    .max(1000, {
+      error: 'Question cannot exceed 1000 characters.',
+    }),
+  content: z.string(),
+})

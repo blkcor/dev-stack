@@ -70,4 +70,11 @@ export const api = {
         method: 'DELETE',
       }),
   },
+  ai: {
+    answers: (question: string, content: string) =>
+      fetchHandler(`${API_BASE_URL}/ai/answers`, {
+        method: 'POST',
+        body: JSON.stringify({ question, content }),
+      }),
+  },
 }
