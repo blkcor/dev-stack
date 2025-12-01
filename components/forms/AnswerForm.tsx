@@ -35,30 +35,39 @@ const AnswerForm = ({ questionId, questionTitle, questionContent }: {
 }) => {
   const [isSubmitting, startAnswerTransition] = useTransition()
   const [isAISubmitting, setIsAISubmitting] = useState<boolean>(false)
-  const [userHasScrolled, setUserHasScrolled] = useState<boolean>(false)
+  const [isAtBottom, setIsAtBottom] = useState<boolean>(true)
   const editorRef = useRef<MDXEditorMethods>(null)
   const session = useSession()
 
-  // Detect when user scrolls during AI generation
+  // Monitor scroll position in the editor container
   useEffect(() => {
-    const handleWheel = () => {
-      if (isAISubmitting) {
-        setUserHasScrolled(true)
-      }
+    const checkIfAtBottom = () => {
+      const editorElement = document.querySelector('.mdxeditor-root-contenteditable') as HTMLElement
+      if (!editorElement) return
+
+      const scrollTop = editorElement.scrollTop
+      const scrollHeight = editorElement.scrollHeight
+      const clientHeight = editorElement.clientHeight
+
+      // Consider "at bottom" if within 50px of the bottom
+      const atBottom = scrollTop + clientHeight >= scrollHeight - 50
+      setIsAtBottom(atBottom)
     }
 
-    const handleTouchMove = () => {
-      if (isAISubmitting) {
-        setUserHasScrolled(true)
-      }
-    }
+    // Initial check
+    const initialCheckTimer = setTimeout(checkIfAtBottom, 100)
 
-    window.addEventListener('wheel', handleWheel, { passive: true })
-    window.addEventListener('touchmove', handleTouchMove, { passive: true })
+    // Listen to scroll events on the editor container
+    const editorElement = document.querySelector('.mdxeditor-root-contenteditable')
+    if (editorElement) {
+      editorElement.addEventListener('scroll', checkIfAtBottom, { passive: true })
+    }
 
     return () => {
-      window.removeEventListener('wheel', handleWheel)
-      window.removeEventListener('touchmove', handleTouchMove)
+      clearTimeout(initialCheckTimer)
+      if (editorElement) {
+        editorElement.removeEventListener('scroll', checkIfAtBottom)
+      }
     }
   }, [isAISubmitting])
 
@@ -99,7 +108,6 @@ const AnswerForm = ({ questionId, questionTitle, questionContent }: {
     }
 
     setIsAISubmitting(true)
-    setUserHasScrolled(false) // Reset scroll detection
     const userAnswer = editorRef.current?.getMarkdown()
 
     try {
@@ -111,29 +119,20 @@ const AnswerForm = ({ questionId, questionTitle, questionContent }: {
         questionContent,
         userAnswer,
         (text) => {
-          // Get the editor's content editable element to preserve scroll position
-          const editorElement = document.querySelector('.mdxeditor-root-contenteditable')
-          const scrollTop = editorElement?.scrollTop || 0
-          const scrollHeight = editorElement?.scrollHeight || 0
-          const clientHeight = editorElement?.clientHeight || 0
-
-          // Check if user was at the bottom before update
-          const wasAtBottom = scrollTop + clientHeight >= scrollHeight - 10
-
           // Update content
           editorRef.current?.setMarkdown(text)
           form.setValue('content', text)
 
-          // Restore scroll position after a short delay
-          setTimeout(() => {
-            if (editorElement) {
-              if (userHasScrolled && !wasAtBottom) {
-                // User has scrolled manually - keep their position
-                editorElement.scrollTop = scrollTop
+          // Auto-scroll to bottom if user is at the bottom
+          // The scroll event listener will keep isAtBottom updated in real-time
+          if (isAtBottom) {
+            requestAnimationFrame(() => {
+              const editorElement = document.querySelector('.mdxeditor-root-contenteditable') as HTMLElement
+              if (editorElement) {
+                editorElement.scrollTop = editorElement.scrollHeight
               }
-              // If user was at bottom or hasn't scrolled, let it auto-scroll to bottom
-            }
-          }, 0)
+            })
+          }
         }
       )
 
@@ -150,7 +149,6 @@ const AnswerForm = ({ questionId, questionTitle, questionContent }: {
       })
     } finally {
       setIsAISubmitting(false)
-      setUserHasScrolled(false)
     }
   }
 
