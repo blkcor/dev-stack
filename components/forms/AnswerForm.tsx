@@ -76,22 +76,24 @@ const AnswerForm = ({ questionId, questionTitle, questionContent }: {
 
     setIsAISubmitting(true)
     const userAnswer = editorRef.current?.getMarkdown()
-    try {
-      const { success, error, data } = await api.ai.getAnswers(questionTitle, questionContent, userAnswer)
-      console.log('API Response:', { success, error, data })
-      if (!success) {
-        return toast.error('Error', {
-          description: error?.message || "Something went wrong while generating AI answer"
-        })
-      }
 
-      if (data) {
-        const formattedData = data.replace(/<br>/g, ' ').trim()
-        editorRef.current?.setMarkdown(formattedData)
-        form.setValue('content', data)
-        // trigger the form content field validation
-        form.trigger('content')
-      }
+    try {
+      // Reset the editor content before streaming
+      editorRef.current?.setMarkdown('')
+
+      await api.ai.streamAnswers(
+        questionTitle,
+        questionContent,
+        userAnswer,
+        (text) => {
+          // Update editor and form as chunks arrive
+          editorRef.current?.setMarkdown(text)
+          form.setValue('content', text)
+        }
+      )
+
+      // Trigger form validation after streaming is complete
+      form.trigger('content')
 
       toast.success('Success', {
         description: 'AI answer generated successfully'

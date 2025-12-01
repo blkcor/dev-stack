@@ -1,6 +1,5 @@
 import { deepseek } from '@ai-sdk/deepseek'
-import { generateText } from 'ai'
-import { NextResponse } from 'next/dist/server/web/spec-extension/response'
+import { streamText } from 'ai'
 import { NextRequest } from 'next/server'
 import z from 'zod'
 
@@ -18,7 +17,7 @@ export const POST = async (req: NextRequest) => {
 
     const { question, content, userAnswer } = validatedResult.data
 
-    const { text } = await generateText({
+    const result = streamText({
       model: deepseek('deepseek-chat'),
       system:
         "You are a helpful assistant that provides informative responses in markdown format. Use appropriate markdown syntax for headings, lists, code blocks, and emphasis where necessary. For code blocks, use short-form smaller case language identifiers (e.g., 'js' for JavaScript, 'py' for Python, 'ts' for TypeScript, 'html' for HTML, 'css' for CSS, etc.).",
@@ -35,7 +34,7 @@ improve or correct it while keeping the response concise and to the point.
 Provide the final answer in markdown format.`,
     })
 
-    return NextResponse.json({ success: true, data: text }, { status: 200 })
+    return result.toTextStreamResponse()
   } catch (err) {
     return handleError(err, 'api') as APIErrorResponse
   }
