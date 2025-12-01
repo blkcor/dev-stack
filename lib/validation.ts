@@ -286,4 +286,5 @@ export const AIAnswerSchema = z.object({
   content: z.string().min(10, {
     error: 'Question content must be at least 10 characters long.',
   }),
+  userAnswer: z.string().optional(),
 })

@@ -75,9 +75,9 @@ const AnswerForm = ({ questionId, questionTitle, questionContent }: {
     }
 
     setIsAISubmitting(true)
-
+    const userAnswer = editorRef.current?.getMarkdown()
     try {
-      const { success, error, data } = await api.ai.getAnswers(questionTitle, questionContent)
+      const { success, error, data } = await api.ai.getAnswers(questionTitle, questionContent, userAnswer)
       console.log('API Response:', { success, error, data })
       if (!success) {
         return toast.error('Error', {
