@@ -5,7 +5,7 @@ import { Icon } from '@iconify/react'
 import { type MDXEditorMethods } from '@mdxeditor/editor'
 import dynamic from 'next/dynamic'
 import { useSession } from 'next-auth/react'
-import { useRef, useState, useTransition } from 'react'
+import { useRef, useState, useTransition, useEffect } from 'react'
 import type { SubmitHandler, } from 'react-hook-form'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -35,8 +35,32 @@ const AnswerForm = ({ questionId, questionTitle, questionContent }: {
 }) => {
   const [isSubmitting, startAnswerTransition] = useTransition()
   const [isAISubmitting, setIsAISubmitting] = useState<boolean>(false)
+  const [userHasScrolled, setUserHasScrolled] = useState<boolean>(false)
   const editorRef = useRef<MDXEditorMethods>(null)
   const session = useSession()
+
+  // Detect when user scrolls during AI generation
+  useEffect(() => {
+    const handleWheel = () => {
+      if (isAISubmitting) {
+        setUserHasScrolled(true)
+      }
+    }
+
+    const handleTouchMove = () => {
+      if (isAISubmitting) {
+        setUserHasScrolled(true)
+      }
+    }
+
+    window.addEventListener('wheel', handleWheel, { passive: true })
+    window.addEventListener('touchmove', handleTouchMove, { passive: true })
+
+    return () => {
+      window.removeEventListener('wheel', handleWheel)
+      window.removeEventListener('touchmove', handleTouchMove)
+    }
+  }, [isAISubmitting])
 
   const form = useForm<z.infer<typeof AnswerSchema>>({
     resolver: zodResolver(AnswerSchema),
@@ -75,6 +99,7 @@ const AnswerForm = ({ questionId, questionTitle, questionContent }: {
     }
 
     setIsAISubmitting(true)
+    setUserHasScrolled(false) // Reset scroll detection
     const userAnswer = editorRef.current?.getMarkdown()
 
     try {
@@ -86,9 +111,29 @@ const AnswerForm = ({ questionId, questionTitle, questionContent }: {
         questionContent,
         userAnswer,
         (text) => {
-          // Update editor and form as chunks arrive
+          // Get the editor's content editable element to preserve scroll position
+          const editorElement = document.querySelector('.mdxeditor-root-contenteditable')
+          const scrollTop = editorElement?.scrollTop || 0
+          const scrollHeight = editorElement?.scrollHeight || 0
+          const clientHeight = editorElement?.clientHeight || 0
+
+          // Check if user was at the bottom before update
+          const wasAtBottom = scrollTop + clientHeight >= scrollHeight - 10
+
+          // Update content
           editorRef.current?.setMarkdown(text)
           form.setValue('content', text)
+
+          // Restore scroll position after a short delay
+          setTimeout(() => {
+            if (editorElement) {
+              if (userHasScrolled && !wasAtBottom) {
+                // User has scrolled manually - keep their position
+                editorElement.scrollTop = scrollTop
+              }
+              // If user was at bottom or hasn't scrolled, let it auto-scroll to bottom
+            }
+          }, 0)
         }
       )
 
@@ -105,6 +150,7 @@ const AnswerForm = ({ questionId, questionTitle, questionContent }: {
       })
     } finally {
       setIsAISubmitting(false)
+      setUserHasScrolled(false)
     }
   }
 

@@ -40,9 +40,6 @@ const QuestionDetails = async ({ params }: RouteParam) => {
     sort: 'latest',
   })
 
-  console.log('SUCCESS', isAnswerLoaded)
-  console.log('ERROR', answersError)
-  console.log('ANSWERS', answersResult)
 
   const { _id, name, avatar } = data.author
 

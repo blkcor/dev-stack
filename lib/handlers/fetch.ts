@@ -66,3 +66,88 @@ export const fetchHandler = async <T>(
     clearTimeout(id)
   }
 }
+
+/**
+ * Fetch handler for streaming responses
+ * Use this when you need to process server-sent events or streaming data
+ *
+ * @param url - The URL to fetch from
+ * @param options - Fetch options (without timeout, as streams can be long-running)
+ * @param onChunk - Callback function that receives accumulated text as chunks arrive
+ * @returns Promise that resolves with the complete accumulated text
+ *
+ * @example
+ * ```typescript
+ * const result = await fetchHandlerStream(
+ *   '/api/stream',
+ *   { method: 'POST', body: JSON.stringify({ prompt: 'Hello' }) },
+ *   (accumulatedText) => {
+ *     console.log('Received:', accumulatedText)
+ *   }
+ * )
+ * ```
+ */
+export const fetchHandlerStream = async (
+  url: string,
+  options: FetchOptions = {},
+  onChunk?: (accumulatedText: string) => void
+): Promise<string> => {
+  const { headers: customHeaders = {}, ...restOptions } = options
+
+  const defaultHeaders: HeadersInit = {
+    'Content-Type': 'application/json',
+  }
+
+  // construct the full request headers
+  const headers: HeadersInit = { ...defaultHeaders, ...customHeaders }
+  // construct the full request config
+  const config: RequestInit = {
+    ...restOptions,
+    headers,
+  }
+
+  try {
+    const response = await fetch(url, config)
+
+    if (!response.ok) {
+      let errorMessage = `HTTP error: ${response.statusText}`
+      try {
+        const errorData = (await response.json()) as ErrorResponse
+        if (errorData && errorData.error && errorData.error.message) {
+          errorMessage = errorData.error.message
+        }
+      } catch {
+        // If parsing error response fails, use the default error message
+      }
+      throw new RequestError(response.status, errorMessage)
+    }
+
+    const reader = response.body?.getReader()
+    const decoder = new TextDecoder()
+
+    if (!reader) {
+      throw new Error('No response body available for streaming')
+    }
+
+    let accumulatedText = ''
+
+    while (true) {
+      const { done, value } = await reader.read()
+
+      if (done) break
+
+      const textChunk = decoder.decode(value, { stream: true })
+      accumulatedText += textChunk
+
+      if (onChunk) {
+        onChunk(accumulatedText)
+      }
+    }
+
+    return accumulatedText
+  } catch (err) {
+    const error = isError(err) ? err : new Error('Unknown Error')
+    logger.error(`Error streaming from ${url}: ${error.message}`)
+    throw error
+  }
+}

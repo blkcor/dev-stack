@@ -1,6 +1,6 @@
 import { IAccount, IAccountDoc } from '@/database/account.model'
 import { IUser } from '@/database/user.model'
-import { fetchHandler } from '@/lib/handlers/fetch'
+import { fetchHandler, fetchHandlerStream } from '@/lib/handlers/fetch'
 import { SignInWithOAuthParams } from '@/types/action'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000/api'
@@ -87,40 +87,14 @@ export const api = {
       userAnswer?: string,
       onChunk?: (text: string) => void
     ): Promise<string> => {
-      const response = await fetch(`${API_BASE_URL}/ai/answers`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      return fetchHandlerStream(
+        `${API_BASE_URL}/ai/answers`,
+        {
+          method: 'POST',
+          body: JSON.stringify({ question, content, userAnswer }),
         },
-        body: JSON.stringify({ question, content, userAnswer }),
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to generate AI answer')
-      }
-
-      const reader = response.body?.getReader()
-      const decoder = new TextDecoder()
-
-      if (!reader) {
-        throw new Error('No response body')
-      }
-
-      let accumulatedText = ''
-
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-
-        const textChunk = decoder.decode(value, { stream: true })
-        accumulatedText += textChunk
-
-        if (onChunk) {
-          onChunk(accumulatedText)
-        }
-      }
-
-      return accumulatedText
+        onChunk
+      )
     },
   },
 }
