@@ -13,7 +13,7 @@ import {
 } from '@/types/action'
 
 import action from '../handlers/action'
-import { handleError, handleError } from '../handlers/error'
+import { handleError } from '../handlers/error'
 import { CreateVoteSchema, HasVotedSchema, UpdateVoteSchema } from '../validation'
 
 export const createVote = async (params: CreateVoteParams): Promise<ActionResponse> => {
