@@ -5,7 +5,7 @@ import { Icon } from '@iconify/react'
 import { type MDXEditorMethods } from '@mdxeditor/editor'
 import dynamic from 'next/dynamic'
 import { useSession } from 'next-auth/react'
-import { useRef, useState, useTransition, useEffect } from 'react'
+import { useRef, useState, useTransition, useEffect, useCallback } from 'react'
 import type { SubmitHandler, } from 'react-hook-form'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -35,41 +35,75 @@ const AnswerForm = ({ questionId, questionTitle, questionContent }: {
 }) => {
   const [isSubmitting, startAnswerTransition] = useTransition()
   const [isAISubmitting, setIsAISubmitting] = useState<boolean>(false)
-  const [isAtBottom, setIsAtBottom] = useState<boolean>(true)
+  // Use ref to avoid stale closure issues in streaming callback
+  const isAtBottomRef = useRef<boolean>(true)
   const editorRef = useRef<MDXEditorMethods>(null)
   const session = useSession()
 
-  // Monitor scroll position in the editor container
+  // Get editor element helper
+  const getEditorElement = useCallback(() => {
+    return document.querySelector('.mdxeditor-root-contenteditable') as HTMLElement | null
+  }, [])
+
+  // Check if scrolled to bottom
+  const checkIfAtBottom = useCallback(() => {
+    const el = getEditorElement()
+    if (!el) return true
+    const { scrollTop, scrollHeight, clientHeight } = el
+    // If content doesn't overflow, consider at bottom
+    if (scrollHeight <= clientHeight) return true
+    // Within 50px of bottom is considered "at bottom"
+    return scrollTop + clientHeight >= scrollHeight - 50
+  }, [getEditorElement])
+
+  // Scroll to bottom
+  const scrollToBottom = useCallback(() => {
+    const el = getEditorElement()
+    if (el) {
+      el.scrollTop = el.scrollHeight
+    }
+  }, [getEditorElement])
+
+  // Set up scroll listener on editor element
   useEffect(() => {
-    const checkIfAtBottom = () => {
-      const editorElement = document.querySelector('.mdxeditor-root-contenteditable') as HTMLElement
-      if (!editorElement) return
-
-      const scrollTop = editorElement.scrollTop
-      const scrollHeight = editorElement.scrollHeight
-      const clientHeight = editorElement.clientHeight
-
-      // Consider "at bottom" if within 50px of the bottom
-      const atBottom = scrollTop + clientHeight >= scrollHeight - 50
-      setIsAtBottom(atBottom)
+    const handleScroll = () => {
+      isAtBottomRef.current = checkIfAtBottom()
     }
 
-    // Initial check
-    const initialCheckTimer = setTimeout(checkIfAtBottom, 100)
+    let editorElement: Element | null = null
+    let observerCleanup: (() => void) | null = null
 
-    // Listen to scroll events on the editor container
-    const editorElement = document.querySelector('.mdxeditor-root-contenteditable')
+    const setupListener = (el: Element) => {
+      el.addEventListener('scroll', handleScroll, { passive: true })
+      // Initial check
+      isAtBottomRef.current = checkIfAtBottom()
+    }
+
+    // Try to get editor element immediately
+    editorElement = getEditorElement()
     if (editorElement) {
-      editorElement.addEventListener('scroll', checkIfAtBottom, { passive: true })
+      setupListener(editorElement)
+    } else {
+      // Use MutationObserver to wait for editor element
+      const observer = new MutationObserver(() => {
+        const el = getEditorElement()
+        if (el) {
+          observer.disconnect()
+          editorElement = el
+          setupListener(el)
+        }
+      })
+      observer.observe(document.body, { childList: true, subtree: true })
+      observerCleanup = () => observer.disconnect()
     }
 
     return () => {
-      clearTimeout(initialCheckTimer)
+      observerCleanup?.()
       if (editorElement) {
-        editorElement.removeEventListener('scroll', checkIfAtBottom)
+        editorElement.removeEventListener('scroll', handleScroll)
       }
     }
-  }, [isAISubmitting])
+  }, [checkIfAtBottom, getEditorElement])
 
   const form = useForm<z.infer<typeof AnswerSchema>>({
     resolver: zodResolver(AnswerSchema),
@@ -108,6 +142,8 @@ const AnswerForm = ({ questionId, questionTitle, questionContent }: {
     }
 
     setIsAISubmitting(true)
+    // Reset to bottom state when starting generation
+    isAtBottomRef.current = true
     const userAnswer = editorRef.current?.getMarkdown()
 
     try {
@@ -124,13 +160,10 @@ const AnswerForm = ({ questionId, questionTitle, questionContent }: {
           form.setValue('content', text)
 
           // Auto-scroll to bottom if user is at the bottom
-          // The scroll event listener will keep isAtBottom updated in real-time
-          if (isAtBottom) {
+          // Using ref to get real-time value, avoiding stale closure
+          if (isAtBottomRef.current) {
             requestAnimationFrame(() => {
-              const editorElement = document.querySelector('.mdxeditor-root-contenteditable') as HTMLElement
-              if (editorElement) {
-                editorElement.scrollTop = editorElement.scrollHeight
-              }
+              scrollToBottom()
             })
           }
         }
