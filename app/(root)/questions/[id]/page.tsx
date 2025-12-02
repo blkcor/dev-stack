@@ -10,6 +10,7 @@ import MDXPreview from '@/components/editor/preview'
 import AnswerForm from '@/components/forms/AnswerForm'
 import Metric from '@/components/Metric'
 import UserAvatar from '@/components/UserAvatar'
+import Votes from '@/components/votes/Votes'
 import ROUTES from '@/constants/routes'
 import { ITagDoc } from '@/database/tag.model'
 import { getAnswers } from '@/lib/actions/answer.action'
@@ -61,7 +62,7 @@ const QuestionDetails = async ({ params }: RouteParam) => {
           </div>
 
           <div className='flex justify-end'>
-            <p>Votes</p>
+            <Votes upvotes={data.upvotes} downvotes={data.downvotes} hasDownVote={false} hasUpVote={true} />
           </div>
         </div>
 

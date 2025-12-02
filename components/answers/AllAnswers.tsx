@@ -17,7 +17,7 @@ const AllAnswers = ({
   totalAnswers
 }: AllAnswersProps) => {
   return <div className='mt-11'>
-    <div className='flex items-center justify-between'>
+    <div className='flex items-center justify-between mb-3'>
       <h3 className='primary-text-gradient'>
         {
           totalAnswers === 1 ? `${totalAnswers} Answer` : `${totalAnswers} Answers`
