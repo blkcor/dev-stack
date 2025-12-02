@@ -1,4 +1,4 @@
-import { model, models, Schema, Types } from 'mongoose'
+import { Model, model, models, Schema, Types } from 'mongoose'
 
 type VoteTo = 'answer' | 'question'
 type VoteType = 'upvote' | 'downvote'
@@ -28,6 +28,6 @@ const VoteSchema = new Schema<IVote>(
   }
 )
 
-const Vote = models.Vote || model<IVote>('Vote', VoteSchema)
+const Vote = (models.Vote as Model<IVote>) || model<IVote>('Vote', VoteSchema)
 
 export default Vote

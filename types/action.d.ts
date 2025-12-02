@@ -49,6 +49,16 @@ export interface GetAnswersParams extends PaginatedQueryParams {
   questionId: string
 }
 
+export interface CreateVoteParams {
+  itemId: string
+  itemType: 'question' | 'answer'
+  voteType: 'upvote' | 'downvote'
+}
+
+export interface UpdateVoteParams extends CreateVoteParams {
+  change: 1 | -1
+}
+
 export interface AIAnswerParams {
   question: string
   content: string

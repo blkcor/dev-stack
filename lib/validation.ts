@@ -288,3 +288,19 @@ export const AIAnswerSchema = z.object({
   }),
   userAnswer: z.string().optional(),
 })
+
+export const CreateVoteSchema = z.object({
+  itemId: z.string().min(1, {
+    error: 'itemId is required',
+  }),
+  itemType: z.enum(['question', 'answer'], {
+    error: 'Invalid item type',
+  }),
+  voteType: z.enum(['upvote', 'downvote'], {
+    error: 'Invalid vote type',
+  }),
+})
+
+export const UpdateVoteSchema = CreateVoteSchema.extend({
+  change: z.number().min(-1).max(1),
+})

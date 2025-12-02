@@ -18,7 +18,7 @@ export const GET = async (_req: NextRequest, { params }: { params: Promise<{ id:
     // query the user with id
     const account = await Account.findById(id)
     if (!account) {
-      return new NotFoundError('Account')
+      throw new NotFoundError('Account')
     }
 
     return NextResponse.json(
@@ -31,7 +31,7 @@ export const GET = async (_req: NextRequest, { params }: { params: Promise<{ id:
       }
     )
   } catch (error) {
-    return handleError(error, 'api') as APIErrorResponse
+    return handleError(error, 'api')
   }
 }
 
@@ -48,7 +48,7 @@ export const DELETE = async (
     await dbConnect()
     const account = await Account.findByIdAndDelete(id)
     if (!account) {
-      return new NotFoundError('Account')
+      throw new NotFoundError('Account')
     }
 
     return NextResponse.json(
@@ -61,7 +61,7 @@ export const DELETE = async (
       }
     )
   } catch (error) {
-    return handleError(error, 'api') as APIErrorResponse
+    return handleError(error, 'api')
   }
 }
 
@@ -82,7 +82,7 @@ export const PUT = async (req: NextRequest, { params }: { params: Promise<{ id: 
 
     const updatedAccount = await Account.findByIdAndUpdate(id, validatedData, { new: true })
     if (!updatedAccount) {
-      return new NotFoundError('Account')
+      throw new NotFoundError('Account')
     }
 
     return NextResponse.json(
@@ -95,6 +95,6 @@ export const PUT = async (req: NextRequest, { params }: { params: Promise<{ id: 
       }
     )
   } catch (error) {
-    return handleError(error, 'api') as APIErrorResponse
+    return handleError(error, 'api')
   }
 }
