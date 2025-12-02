@@ -5,7 +5,6 @@ import { redirect } from 'next/navigation'
 import { after } from 'next/server'
 import React from 'react'
 
-
 import { auth } from '@/auth'
 import AllAnswers from '@/components/answers/AllAnswers'
 import TagCard from '@/components/cards/TagCard'
@@ -71,8 +70,8 @@ const QuestionDetails = async ({ params }: RouteParam) => {
               itemId={data._id.toString()}
               upvotes={data.upvotes}
               downvotes={data.downvotes}
-              hasUpVote={userId ? data.upvotes.includes(userId) : false}
-              hasDownVote={userId ? data.downvotes.includes(userId) : false}
+              hasUpVote={true}
+              hasDownVote={true}
             />
           </div>
         </div>

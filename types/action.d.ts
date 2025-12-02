@@ -63,3 +63,10 @@ export interface AIAnswerParams {
   question: string
   content: string
 }
+
+export type HasVotedParams = Pick<CreateVoteParams, 'itemId' | 'itemType'>
+
+export type HasVotedResponse = {
+  hasUpvoted: boolean
+  hasDownvoted: boolean
+}

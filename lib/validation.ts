@@ -304,3 +304,8 @@ export const CreateVoteSchema = z.object({
 export const UpdateVoteSchema = CreateVoteSchema.extend({
   change: z.number().min(-1).max(1),
 })
+
+export const HasVotedSchema = CreateVoteSchema.pick({
+  itemId: true,
+  itemType: true,
+})
