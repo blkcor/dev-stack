@@ -1,17 +1,24 @@
 import Link from 'next/link'
-import React from 'react'
+import React, { Suspense } from 'react'
 
 import MDXPreview from '@/components/editor/preview'
 import UserAvatar from '@/components/UserAvatar'
 import ROUTES from '@/constants/routes'
 import { IAnswerAuthorPopulated } from '@/database/answer.model'
+import { hasVoted } from '@/lib/actions/vote.action'
 import { getTimeStamp } from '@/lib/utils'
+
+import Votes from '../votes/Votes'
 
 interface AnswerCardProps {
   answer: IAnswerAuthorPopulated
 }
 
 const AnswerCard = ({ answer }: AnswerCardProps) => {
+  const hasVotedPromise = hasVoted({
+    itemId: answer._id,
+    itemType: 'answer'
+  })
   return (
     <article className='card-wrapper rounded-[10px] px-5 py-8 sm:px-9 sm:py-9 mb-6'>
       <span id={answer._id} className='hash-span' />
@@ -33,7 +40,11 @@ const AnswerCard = ({ answer }: AnswerCardProps) => {
           </Link>
         </div>
 
-        <div className='flex justify-end'>Votes</div>
+        <div className='flex justify-end'>
+          <Suspense fallback={<div>Loading...</div>}>
+            <Votes upvotes={answer.upvotes} downvotes={answer.downvotes} itemType='answer' itemId={answer._id} hasVoted={hasVotedPromise} />
+          </Suspense>
+        </div>
       </div>
       <MDXPreview content={answer.content} />
     </article>

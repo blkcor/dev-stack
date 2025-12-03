@@ -20,6 +20,8 @@ export type IAnswerAuthorPopulated = {
   _id: string
   author: Pick<IUserDoc, '_id' | 'name' | 'avatar'>
   content: string
+  upvotes: number
+  downvotes: number
   createdAt: string
   updatedAt: string
 }

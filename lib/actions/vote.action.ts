@@ -109,7 +109,14 @@ export const createVote = async (params: CreateVoteParams): Promise<ActionRespon
 
     await session.commitTransaction()
 
-    revalidatePath(ROUTES.QUESTION(itemId))
+    if (itemType === 'question') {
+      revalidatePath(ROUTES.QUESTION(itemId))
+    } else {
+      const answer = await Answer.findById(itemId)
+      if (answer) {
+        revalidatePath(ROUTES.QUESTION(answer.question.toString()))
+      }
+    }
 
     return { success: true }
   } catch (error) {
