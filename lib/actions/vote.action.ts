@@ -1,7 +1,9 @@
 'use server'
 
 import mongoose, { ClientSession } from 'mongoose'
+import { revalidatePath } from 'next/cache'
 
+import ROUTES from '@/constants/routes'
 import Answer from '@/database/answer.model'
 import Question from '@/database/question.model'
 import Vote from '@/database/vote.model'
@@ -39,7 +41,7 @@ export const createVote = async (params: CreateVoteParams): Promise<ActionRespon
     const existingVote = await Vote.findOne({
       author: userId,
       type: itemType,
-      voteType,
+      id: itemId,
     })
 
     if (existingVote) {
@@ -60,6 +62,15 @@ export const createVote = async (params: CreateVoteParams): Promise<ActionRespon
         )
       } else {
         await Vote.findByIdAndUpdate(existingVote._id, { voteType }, { new: true, session })
+        await updateVote(
+          {
+            itemId,
+            itemType,
+            voteType: existingVote.voteType,
+            change: -1,
+          },
+          session
+        )
         await updateVote(
           {
             itemId,
@@ -97,6 +108,8 @@ export const createVote = async (params: CreateVoteParams): Promise<ActionRespon
     }
 
     await session.commitTransaction()
+
+    revalidatePath(ROUTES.QUESTION(itemId))
 
     return { success: true }
   } catch (error) {

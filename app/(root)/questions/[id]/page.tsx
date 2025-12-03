@@ -3,9 +3,8 @@ import { Icon } from '@iconify/react'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { after } from 'next/server'
-import React from 'react'
+import React, { Suspense } from 'react'
 
-import { auth } from '@/auth'
 import AllAnswers from '@/components/answers/AllAnswers'
 import TagCard from '@/components/cards/TagCard'
 import MDXPreview from '@/components/editor/preview'
@@ -17,12 +16,11 @@ import ROUTES from '@/constants/routes'
 import { ITagDoc } from '@/database/tag.model'
 import { getAnswers } from '@/lib/actions/answer.action'
 import { getQuestion, incrementViews } from '@/lib/actions/question.action'
+import { hasVoted } from '@/lib/actions/vote.action'
 import { getTimeStamp } from '@/lib/utils'
 
 const QuestionDetails = async ({ params }: RouteParam) => {
   const { id } = await params
-  const session = await auth()
-  const userId = session?.user?.id
 
   after(async () => {
     await incrementViews({ questionId: id })
@@ -47,6 +45,8 @@ const QuestionDetails = async ({ params }: RouteParam) => {
 
   const { _id, name, avatar } = data.author
 
+  const hasVotedPromise = hasVoted({ itemId: id, itemType: 'question' })
+
   return (
     <>
       <div className="flex-start w-full flex-col">
@@ -65,14 +65,15 @@ const QuestionDetails = async ({ params }: RouteParam) => {
           </div>
 
           <div className="flex justify-end">
-            <Votes
-              itemType="question"
-              itemId={data._id.toString()}
-              upvotes={data.upvotes}
-              downvotes={data.downvotes}
-              hasUpVote={true}
-              hasDownVote={true}
-            />
+            <Suspense fallback={<div>Loading...</div>}>
+              <Votes
+                itemType="question"
+                itemId={data._id.toString()}
+                upvotes={data.upvotes}
+                downvotes={data.downvotes}
+                hasVoted={hasVotedPromise}
+              />
+            </Suspense>
           </div>
         </div>
 
