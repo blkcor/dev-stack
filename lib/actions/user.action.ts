@@ -12,7 +12,7 @@ export const getAllUsers = async (
   params: PaginatedQueryParams
 ): Promise<
   ActionResponse<{
-    users: IUser[]
+    users: Array<IUser & { _id: string }>
     isNext: boolean
   }>
 > => {
