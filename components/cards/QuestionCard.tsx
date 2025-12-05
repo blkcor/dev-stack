@@ -1,5 +1,4 @@
-// 'use client'
-
+import { Icon } from '@iconify/react'
 import Link from 'next/link'
 import * as React from 'react'
 
@@ -14,11 +13,12 @@ import UserAvatar from '../UserAvatar'
 
 type Props = {
   question: IQuestionTagPopulated & IQuestionAuthorPopulated
+  collected: boolean
 }
-const QuestionCard = ({ question }: Props) => {
+const QuestionCard = ({ question, collected }: Props) => {
   return (
     <div className='card-wrapper hover:shadow-primary-500/10 dark:hover:shadow-primary-500/20 cursor-pointer rounded-[10px] p-9 transition-all duration-300 hover:shadow-2xl sm:px-11'>
-      <div className='flex flex-col-reverse items-start justify-between gap-5 sm:flex-row'>
+      <div className='flex flex-col-reverse items-start justify-between gap-5 sm:flex-row relative'>
         <div>
           <span className='text-dark400_light700 line-clamp-1 flex text-sm sm:hidden'>
             {getTimeStamp(new Date(question.createdAt))}
@@ -29,6 +29,10 @@ const QuestionCard = ({ question }: Props) => {
               {question.title}
             </h3>
           </Link>
+          {
+            !collected ? <Icon icon="mingcute:star-fill" className='absolute right-0 top-0 text-primary-500 hover:text-primary-100' /> :
+              <Icon icon="solar:star-outline" className='absolute right-0 top-0 hover:text-primary-500' />
+          }
         </div>
       </div>
 
@@ -62,7 +66,7 @@ const QuestionCard = ({ question }: Props) => {
           <Metric icon='mdi-light:eye' count={question.views} type='Views' />
         </div>
       </div>
-    </div>
+    </div >
   )
 }
 

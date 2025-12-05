@@ -309,3 +309,9 @@ export const HasVotedSchema = CreateVoteSchema.pick({
   itemId: true,
   itemType: true,
 })
+
+export const CollectionBaseSchema = z.object({
+  questionId: z.string().min(1, {
+    error: 'Question ID is required.',
+  }),
+})
