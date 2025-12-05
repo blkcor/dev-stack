@@ -30,8 +30,8 @@ const QuestionCard = ({ question, collected }: Props) => {
             </h3>
           </Link>
           {
-            !collected ? <Icon icon="mingcute:star-fill" className='absolute right-0 top-0 text-primary-500 hover:text-primary-100' /> :
-              <Icon icon="solar:star-outline" className='absolute right-0 top-0 hover:text-primary-500' />
+            collected ? <Icon icon="mingcute:star-fill" className='absolute right-0 top-0 text-primary-500 ' /> :
+              <Icon icon="solar:star-outline" className='absolute right-0 top-0 ' />
           }
         </div>
       </div>

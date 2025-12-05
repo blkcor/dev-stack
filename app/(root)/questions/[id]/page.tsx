@@ -10,11 +10,13 @@ import TagCard from '@/components/cards/TagCard'
 import MDXPreview from '@/components/editor/preview'
 import AnswerForm from '@/components/forms/AnswerForm'
 import Metric from '@/components/Metric'
+import SaveQuestion from '@/components/questions/SaveQuestion'
 import UserAvatar from '@/components/UserAvatar'
 import Votes from '@/components/votes/Votes'
 import ROUTES from '@/constants/routes'
 import { ITagDoc } from '@/database/tag.model'
 import { getAnswers } from '@/lib/actions/answer.action'
+import { hasSaveQuestion } from '@/lib/actions/collection.action'
 import { getQuestion, incrementViews } from '@/lib/actions/question.action'
 import { hasVoted } from '@/lib/actions/vote.action'
 import { getTimeStamp } from '@/lib/utils'
@@ -46,6 +48,7 @@ const QuestionDetails = async ({ params }: RouteParam) => {
   const { _id, name, avatar } = data.author
 
   const hasVotedPromise = hasVoted({ itemId: id, itemType: 'question' })
+  const hasSavedPromise = hasSaveQuestion({ questionId: id })
 
   return (
     <>
@@ -64,7 +67,7 @@ const QuestionDetails = async ({ params }: RouteParam) => {
             </Link>
           </div>
 
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-3 items-center">
             <Suspense fallback={<div>Loading...</div>}>
               <Votes
                 itemType="question"
@@ -72,6 +75,13 @@ const QuestionDetails = async ({ params }: RouteParam) => {
                 upvotes={data.upvotes}
                 downvotes={data.downvotes}
                 hasVoted={hasVotedPromise}
+              />
+            </Suspense>
+
+            <Suspense fallback={<div>Loading...</div>}>
+              <SaveQuestion
+                questionId={id}
+                hasSavedPromise={hasSavedPromise}
               />
             </Suspense>
           </div>

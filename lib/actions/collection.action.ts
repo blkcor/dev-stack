@@ -47,6 +47,7 @@ export const toggleSaveQuestion = async (
     if (existingCollection) {
       await Collection.findByIdAndDelete(existingCollection._id)
 
+      revalidatePath(ROUTES.QUESTION(questionId))
       return {
         success: true,
         data: { saved: false },
@@ -64,6 +65,49 @@ export const toggleSaveQuestion = async (
       success: true,
       data: {
         saved: true,
+      },
+    }
+  } catch (error) {
+    return handleError(error, 'server') as ErrorResponse
+  }
+}
+
+export const hasSaveQuestion = async (
+  params: CollectionBaseParams
+): Promise<
+  ActionResponse<{
+    saved: boolean
+  }>
+> => {
+  const validatedResult = await action({
+    schema: CollectionBaseSchema,
+    params,
+    authorize: true,
+  })
+
+  if (validatedResult instanceof Error) {
+    return handleError(validatedResult, 'server') as ErrorResponse
+  }
+
+  const { questionId } = validatedResult.params!
+  const userId = validatedResult.session?.user?.id
+
+  try {
+    const question = await Question.findById(questionId)
+
+    if (!question) {
+      throw new Error('Question not found')
+    }
+
+    const collection = await Collection.findOne({
+      author: userId,
+      question: questionId,
+    })
+
+    return {
+      success: true,
+      data: {
+        saved: !!collection,
       },
     }
   } catch (error) {
