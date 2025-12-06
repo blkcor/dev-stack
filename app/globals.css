@@ -5,6 +5,9 @@
 
 @custom-variant dark (&:is(.dark * ));
 
+::-webkit-scrollbar {
+  display: none; /* Chrome Safari */
+}
 @theme {
   --color-primary-100: #fff1e6;
   --color-primary-500: #ff7000;

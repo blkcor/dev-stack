@@ -2,7 +2,7 @@ const ROUTES = {
   HOME: '/',
   SIGN_IN: '/sign-in',
   SIGN_UP: '/sign-up',
-  ASK_QUESTION: '/answers/ask',
+  ASK_QUESTION: '/questions/ask',
   QUESTION: (id: string) => `/questions/${id}`,
   PROFILE: (id: string) => `/profile/${id}`,
   TAG: (id: string) => `/tag/${id}`,
