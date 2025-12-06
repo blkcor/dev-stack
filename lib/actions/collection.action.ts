@@ -185,9 +185,6 @@ export const getSavedQuestions = async (
         as: 'question.tags',
       },
     },
-    {
-      $unwind: '$question.tags',
-    },
   ]
 
   try {

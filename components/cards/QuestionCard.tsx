@@ -13,9 +13,8 @@ import UserAvatar from '../UserAvatar'
 
 type Props = {
   question: IQuestionTagPopulated & IQuestionAuthorPopulated
-  collected: boolean
 }
-const QuestionCard = ({ question, collected }: Props) => {
+const QuestionCard = ({ question }: Props) => {
   return (
     <div className='card-wrapper hover:shadow-primary-500/10 dark:hover:shadow-primary-500/20 cursor-pointer rounded-[10px] p-9 transition-all duration-300 hover:shadow-2xl sm:px-11'>
       <div className='flex flex-col-reverse items-start justify-between gap-5 sm:flex-row relative'>
@@ -29,10 +28,7 @@ const QuestionCard = ({ question, collected }: Props) => {
               {question.title}
             </h3>
           </Link>
-          {
-            collected ? <Icon icon="mingcute:star-fill" className='absolute right-0 top-0 text-primary-500 ' /> :
-              <Icon icon="solar:star-outline" className='absolute right-0 top-0 ' />
-          }
+          <Icon icon="mingcute:star-fill" className='absolute right-0 top-0 text-primary-500 ' />
         </div>
       </div>
 

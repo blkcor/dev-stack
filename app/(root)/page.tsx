@@ -54,7 +54,7 @@ export default function Home({ searchParams }: RouteParam) {
         renderer={(questions) => {
           return <div className='mt-10 flex w-full flex-col gap-6'>
             {questions.map((question) => (
-              <QuestionCard key={question._id.toString()} question={question} collected={false} />
+              <QuestionCard key={question._id.toString()} question={question} />
             ))}
           </div>
         }

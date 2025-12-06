@@ -1,6 +1,6 @@
 import { Model, model, models, Schema, Types } from 'mongoose'
 
-import { IQuestionDoc } from './question.model'
+import { IQuestionAuthorPopulated, IQuestionTagPopulated } from './question.model'
 import { IUserDoc } from './user.model'
 
 export interface ICollection {
@@ -16,7 +16,7 @@ export interface ICollectionDoc extends ICollection, Document {
 
 export type ICollectionAuthorQuestionPopulated = Omit<ICollectionDoc, 'author' | 'question'> & {
   author: IUserDoc
-  question: IQuestionDoc
+  question: IQuestionTagPopulated & IQuestionAuthorPopulated
 }
 
 const CollectionSchema = new Schema<ICollection>(
