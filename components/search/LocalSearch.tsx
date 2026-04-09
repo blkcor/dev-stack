@@ -58,6 +58,10 @@ const LocalSearch = ({
     }
   }, [router, searchParams, searchQuery, route, pathname])
 
+  const handleClear = () => {
+    setSearchQuery('')
+  }
+
   return (
     <div
       className={cn(
@@ -66,7 +70,7 @@ const LocalSearch = ({
       )}
     >
 
-      {iconPosition === 'left' && <Icon icon={icon} className='h-6 w-6 cursor-pointer' />}
+      {iconPosition === 'left' && <Icon icon={icon} className='h-6 w-6 cursor-pointer text-dark400_light700' />}
       <Input
         value={searchQuery}
         placeholder={placeHolder}
@@ -76,7 +80,20 @@ const LocalSearch = ({
         className='paragraph-regular no-focus background-light800_dark300! placeholder text-dark400_light700 border-none bg-transparent shadow-none outline-none'
         type='text'
       />
-      {iconPosition === 'right' && <Icon icon={icon} className='h-6 w-6 cursor-pointer' />}
+      {searchQuery && (
+        <button
+          onClick={handleClear}
+          className='p-1 -m-1 rounded-sm focus:outline-none focus:ring-2 focus:ring-primary-500'
+          aria-label='Clear search'
+          title='Clear search'
+        >
+          <Icon
+            icon='material-symbols:close'
+            className='h-5 w-5 text-dark400_light700 cursor-pointer transition-colors duration-200 hover:text-primary-500'
+          />
+        </button>
+      )}
+      {iconPosition === 'right' && (!searchQuery) && <Icon icon={icon} className='h-6 w-6 cursor-pointer text-dark400_light700' />}
     </div>
   )
 }
